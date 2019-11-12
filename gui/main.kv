@@ -1,0 +1,26 @@
+TextWidget:
+
+<TextWidget>:
+	BoxLayout:
+		orientation: 'vertical'
+		size: root.size
+
+		Label:
+			text: "Good Morning"
+			color: 1,0,1,1
+			size_hint_y: 0.5
+	Label:
+		text: "Hello"
+		color: 0,1,0,1
+		size_hint_y: 1
+
+		canvas.before:
+			Color:
+				rgba: 0,1,1,1
+			Rectangle:
+				pos: self.pos
+				size: self.size
+	Label:
+		text: "Good Mornung"
+		color: 0,0,1,1
+		size_hint_y: 2
