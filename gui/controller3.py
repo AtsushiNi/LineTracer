@@ -18,7 +18,8 @@ FRAME_TIME = 10 # 更新間隔(ms)
 FRAME_NUM = 100 # 画面に表示するデータ数
 
 commands = [] # 送信待ちコマンド
-data = np.array(FRAME_NUM)
+light1 = np.array(FRAME_NUM)
+light2 = np.array(FRAME_NUM)
 
 class MainScreen3(BoxLayout):
     def on_enter(self, value):
@@ -35,12 +36,13 @@ class GraphView(BoxLayout):
 
         # 初期化に用いるデータ
         x = np.linspace(1,FRAME_NUM,FRAME_NUM)
-        y = np.zeros(FRAME_NUM)
+        y1 = y2 = np.zeros(FRAME_NUM)
 
         # Figure, Axis を保存しておく
         self.fig, self.ax = plt.subplots()
         # 最初に描画したときの Line も保存しておく
-        self.line, = self.ax.plot(x, y)
+        self.line1, = self.ax.plot(x, y1)
+        self.line2, = self.ax.plot(x, y2)
 
         # ウィジェットとしてグラフを追加する
         widget = FigureCanvasKivyAgg(self.fig)
@@ -51,14 +53,17 @@ class GraphView(BoxLayout):
 
     def update_view(self, *args, **kwargs):
 
-        global data
+        global light1
+        global light2
 
         # データを更新する
         x = np.linspace(1,FRAME_NUM,FRAME_NUM)
-        y = data[-FRAME_NUM]
+        y1 = light1[-FRAME_NUM]
+        y2 = light2[-FRAME_NUM]
 
         # Line にデータを設定する
-        self.line.set_data(x, y)
+        self.line1.set_data(x, y1)
+        self.line2.set_data(x, y2)
         # グラフの見栄えを調整する
         self.ax.relim()
         self.ax.autoscale_view()
@@ -84,22 +89,23 @@ class SerialClient():
     
     # シリアル通信用スレッドの実装部
     def serial_method(self):
-        global data
         global commands
         ser = serial.Serial("COM5",9600) # シリアル通信
 
         while True:
             line = ser.readline()
             line = line.decode()
-            numbers = re.findall('[0-9]+', line)
-            if len(numbers) > 0: # 通信に数字が含まれていなければなにもしない
-                data.append(int(numbers[0]))
-                # if len(numbers) > 1: # 複数のグラフ描画
-                    # data2.append(int(numbers[1]))
-                #     print('(' + numbers[0] + ',' + numbers[1] + ')')
-                # else:
-                #     a=''
-                    # print(numbers[0])
+            receives = re.split(',', line)
+            for receive in receives:
+                x = re.split(':', receive)
+                if x[0] == 'light1':
+                    global light1
+                    light1.append(int(x[1]))
+                elif x[0] == 'light2':
+                    global light2
+                    light2.append(int(x[1]))
+
+            # 送信
             if len(commands) > 0:
                 for command in commands:
                     ser.write(command)
