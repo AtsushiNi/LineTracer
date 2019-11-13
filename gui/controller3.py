@@ -15,11 +15,11 @@ import threading
 
 # 定数
 FRAME_TIME = 10 # 更新間隔(ms)
-FRAME_NUM = 100 # 画面に表示するデータ数
+FRAME_NUM = 200 # 画面に表示するデータ数
 
 commands = [] # 送信待ちコマンド
-light1 = np.array(FRAME_NUM)
-light2 = np.array(FRAME_NUM)
+light1 = np.zeros(FRAME_NUM)
+light2 = np.zeros(FRAME_NUM)
 
 class MainScreen3(BoxLayout):
     def on_enter(self, value):
@@ -49,7 +49,7 @@ class GraphView(BoxLayout):
         self.add_widget(widget)
 
         # frame_time秒ごとに表示を更新するタイマーを仕掛ける
-        Clock.schedule_interval(self.update_view, FRAME_TIME)
+        Clock.schedule_interval(self.update_view, FRAME_TIME/1000)
 
     def update_view(self, *args, **kwargs):
 
@@ -58,8 +58,8 @@ class GraphView(BoxLayout):
 
         # データを更新する
         x = np.linspace(1,FRAME_NUM,FRAME_NUM)
-        y1 = light1[-FRAME_NUM]
-        y2 = light2[-FRAME_NUM]
+        y1 = light1[-FRAME_NUM:]
+        y2 = light2[-FRAME_NUM:]
 
         # Line にデータを設定する
         self.line1.set_data(x, y1)
@@ -94,16 +94,16 @@ class SerialClient():
 
         while True:
             line = ser.readline()
-            line = line.decode()
+            line = line.decode().rstrip('\r\n')
             receives = re.split(',', line)
             for receive in receives:
                 x = re.split(':', receive)
                 if x[0] == 'light1':
                     global light1
-                    light1.append(int(x[1]))
+                    light1 = np.append(light1, int(x[1]))
                 elif x[0] == 'light2':
                     global light2
-                    light2.append(int(x[1]))
+                    light2 = np.append(light2, int(x[1]))
 
             # 送信
             if len(commands) > 0:

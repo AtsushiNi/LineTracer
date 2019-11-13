@@ -2,19 +2,34 @@ MainScreen3:
 
 <MainScreen3>:
     orientation: "vertical"
+    spacing: 5
+
+    canvas.before:
+        Color:
+            rgba: 0.3, 0.3, 0.3, 1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
     BoxLayout:
         height: "40dp"
         size_hint_y: None
+        spacing: 5
 
         TextInput:
             multiline: False
             focus: True
             size_hint_x: 70
+            color: 0,1,0,1
+            background_normal: ''
+            background_down: ''
+            cursor_color: [1,1,1,1]
             on_text_validate: app.root.on_enter(self.text.encode('utf-8'))
 
         Button:
             size_hint_x: 30
             text: 'submit'
+            background_color: [0, 0, 0]
 
     GraphView:
         pos_hint: {"y": 1}

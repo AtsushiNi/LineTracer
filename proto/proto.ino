@@ -17,7 +17,7 @@ int basicSpeed = 250; // 走行スピード
 float reduceRacio = 0.2; // ラジコンモードでの左右減速比
 int outputMoterPower = 0; // モーター出力値を出力するかどうか 0:しない, 1:する
 int outputLightSensor = 1; // 光センサーの値を出力するかどうか 0:しない, 1:する
-int outputMode = 0; // 表示出力の様式　0:ArduinoIDE, 1:Android, 2:ターミナル
+int outputMode = 2; // 表示出力の様式　0:ArduinoIDE, 1:Android, 2:Python
 float kp = 0; // 比例制御のパラメータ
 float ki = 0; // 積分制御のパラメータ
 float kd = 0; // 微分制御のパラメータ
@@ -132,34 +132,16 @@ void loop() {
   }
 
   // 表示出力
-  if (outputMoterPower) {
-    switch(outputMode) {
-      case 0:
-        Serial.print(leftPower);
-        Serial.print(",");
-        Serial.println(rightPower);
-        break;
-      case 1:
-        Serial.print(rightPower);
-        Serial.print('*');
-        Serial.println(leftPower);
-        Serial.println('***');
-       break;
-    }
-  }
-  if (outputLightSensor) {
-    switch(outputMode) {
-      case 0:
-        Serial.print(leftData);
-        Serial.print(',');
-        Serial.println(rightData);
+  switch (outputMode) {
+    case 0:
       break;
-      case 1:
-        Serial.print(rightData);
-        Serial.print('*');
-        Serial.print(leftData);
-        Serial.print('***');
+    case 1:
       break;
-    }
+    case 2:
+      Serial.print("light1:");
+      Serial.print(rightData);
+      Serial.print(",light2:");
+      Serial.println(leftData);
+      break;
   }
 }
