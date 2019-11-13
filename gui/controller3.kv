@@ -1,0 +1,22 @@
+MainScreen3:
+
+<MainScreen3>:
+    orientation: "vertical"
+    BoxLayout:
+        height: "40dp"
+        size_hint_y: None
+
+        TextInput:
+            multiline: False
+            focus: True
+            size_hint_x: 70
+            on_text_validate: app.root.on_enter(self.text.encode('utf-8'))
+
+        Button:
+            size_hint_x: 30
+            text: 'submit'
+
+    BoxLayout:
+        pos_hint: {"y": 1}
+    BoxLayout:
+        pos_hint: {"y": 1}
