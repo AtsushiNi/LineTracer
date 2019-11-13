@@ -39,7 +39,11 @@ class GraphView(BoxLayout):
         y1 = y2 = np.zeros(FRAME_NUM)
 
         # Figure, Axis を保存しておく
-        self.fig, self.ax = plt.subplots()
+        self.fig, self.ax = plt.subplots(facecolor="0.1")
+        self.ax.tick_params(axis='x', colors="0.8")
+        self.ax.tick_params(axis='y', colors="0.8")
+        self.ax.set_facecolor((0.4, 0.4, 0.4, 1))
+
         # 最初に描画したときの Line も保存しておく
         self.line1, = self.ax.plot(x, y1)
         self.line2, = self.ax.plot(x, y2)
