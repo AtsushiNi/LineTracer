@@ -8,8 +8,10 @@ gui/ : pc側のguiプログラム
 実行方法
 ```bash
 cd gui
-scripts/activate.bat
-python controller.py
+cd scripts
+activate.bat
+cd ..
+python controller3.py
 ```
 python仮想環境の停止
 ```
