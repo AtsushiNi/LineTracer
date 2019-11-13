@@ -1,59 +1,32 @@
 # LineTracer
 
-分かりやすくてカッコイイ名前をつける（今回は"h
-
-"hoge"が何かを簡潔に紹介する
-
-# DEMO
-
-"hoge"の魅力が直感的に伝えわるデモ動画や図解を載せる
-
-# Features
-
-"hoge"のセールスポイントや差別化などを説明する
-
-# Requirement
-
-"hoge"を動かすのに必要なライブラリなどを列挙する
-
-* huga 3.5.2
-* hogehuga 1.0.2
-
-# Installation
-
-Requirementで列挙したライブラリなどのインストール方法を説明する
-
-```bash
-pip install huga_package
-```
+proto/ : トレーサー本体のプログラム
+gui/ : pc側のguiプログラム
 
 # Usage
 
-DEMOの実行方法など、"hoge"の基本的な使い方を説明する
-
+実行方法
 ```bash
-git clone https://github.com/hoge/~
-cd examples
-python demo.py
+cd gui
+scripts/activate.bat
+python controller.py
+```
+python仮想環境の停止
+```
+deactivate
 ```
 
-# Note
+# Command
 
-注意点などがあれば書く
+Arduinoに送るコマンド一覧
+コマンド+数字+'a'で実行される
+-a : コマンド入力の実行・リセット
+-b : 基本ステータス　0:待機, 1: 走行
+-c : 走行モード　0:ライントレース, 1:ラジコン
+-d : ラジコンモードの進路方向　0:直進, 1:右, 2: 左
+-e : 走行スピード
+-f : ラジコンモードでの左右減速比
+-g : モーター出力値を出力するかどうか 0:しない, 1:する
+-h : 光センサーの値を出力するかどうか 0:しない, 1:する
+-i : 表示出力の様式　0:ArduinoIDE, 1:Android, 2:ターミナル
 
-# Author
-
-作成情報を列挙する
-
-* 作成者
-* 所属
-* E-mail
-
-# License
-ライセンスを明示する
-
-"hoge" is under [MIT license](https://en.wikipedia.org/wiki/MIT_License).
-
-社内向けなら社外秘であることを明示してる
-
-"hoge" is Confidential.
