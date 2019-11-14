@@ -92,7 +92,8 @@ void loop() {
 
   // 現在位置の算出
   float pos = 0; //線上が0. 機体の右へのずれが正. 両端のセンサー位置が±1
-  pos = calcuPosBy2(rightData, leftData);
+  float likelyPos[4]; // 機体位置の候補。表示用
+  pos = calcuPosBy2(rightData, leftData, likelyPos);
 
   // モーター出力計算
   float rightPower = 0; // 右モーター出力
@@ -142,6 +143,14 @@ void loop() {
       Serial.print(rightData);
       Serial.print(",light2:");
       Serial.print(leftData);
+      Serial.print(",likelyPos1:")
+      Serial.print(likelyPos[0])
+      Serial.print(",likelyPos2:")
+      Serial.print(likelyPos[1])
+      Serial.print(",likelyPos3:")
+      Serial.print(likelyPos[2])
+      Serial.print(",likelyPos4:")
+      Serial.print(likelyPos[3])
       Serial.print(",pos:");
       Serial.println(pos);
       break;

@@ -1,9 +1,9 @@
 # include <math.h>
 
-void calcuLikelyPos(float sensorPos, int data);
+void calcuLikelyPos(float sensorPos, int data, float *res);
 
 // 二つのセンサーから現在位置を割り出す
-float calcuPosBy2(int rightData, int leftData) {
+float calcuPosBy2(int rightData, int leftData, float *res) {
   float position = 0;
   float likelyPos[2][2];
   float distances[4];
@@ -11,6 +11,10 @@ float calcuPosBy2(int rightData, int leftData) {
   // それぞれのセンサーによる予想位置の算出(likelyPosを書き換える)
   calcuLikelyPos(1, rightData, likelyPos[0]);
   calcuLikelyPos(-1, leftData, likelyPos[1]);
+  res[0] = likelyPos[0][0];
+  res[1] = likelyPos[0][1];
+  res[2] = likelyPos[1][0];
+  res[3] = likelyPos[1][1];
   // 予想位置同士の差を計算
   distances[0] = fabsf(likelyPos[0][0] - likelyPos[1][0]);
   distances[1] = fabsf(likelyPos[0][0] - likelyPos[1][1]);
