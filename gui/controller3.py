@@ -18,8 +18,10 @@ FRAME_TIME = 10 # 更新間隔(ms)
 FRAME_NUM = 200 # 画面に表示するデータ数
 
 commands = [] # 送信待ちコマンド
+# グラフのデータ
 light1 = np.zeros(FRAME_NUM)
 light2 = np.zeros(FRAME_NUM)
+pos = np.zeros(FRAME_NUM)
 
 class MainScreen3(BoxLayout):
     def on_enter(self, value):
@@ -36,17 +38,21 @@ class GraphView(BoxLayout):
 
         # 初期化に用いるデータ
         x = np.linspace(1,FRAME_NUM,FRAME_NUM)
-        y1 = y2 = np.zeros(FRAME_NUM)
+        y = np.zeros(FRAME_NUM)
 
         # Figure, Axis を保存しておく
-        self.fig, self.ax = plt.subplots(facecolor="0.1")
-        self.ax.tick_params(axis='x', colors="0.8")
-        self.ax.tick_params(axis='y', colors="0.8")
-        self.ax.set_facecolor((0.4, 0.4, 0.4, 1))
+        self.fig, self.ax = plt.subplots(2, facecolor="0.1")
+        self.ax[0].tick_params(axis='x', colors="0.8")
+        self.ax[0].tick_params(axis='y', colors="0.8")
+        self.ax[0].set_facecolor((0.4, 0.4, 0.4, 1))
+        self.ax[1].tick_params(axis='x', colors="0.8")
+        self.ax[1].tick_params(axis='y', colors="0.8")
+        self.ax[1].set_facecolor((0.4, 0.4, 0.4, 1))
 
         # 最初に描画したときの Line も保存しておく
-        self.line1, = self.ax.plot(x, y1)
-        self.line2, = self.ax.plot(x, y2)
+        self.line11, = self.ax[0].plot(x, y)
+        self.line12, = self.ax[0].plot(x, y)
+        self.line21, = self.ax[1].plot(x, y)
 
         # ウィジェットとしてグラフを追加する
         widget = FigureCanvasKivyAgg(self.fig)
@@ -59,18 +65,23 @@ class GraphView(BoxLayout):
 
         global light1
         global light2
+        global pos
 
         # データを更新する
         x = np.linspace(1,FRAME_NUM,FRAME_NUM)
-        y1 = light1[-FRAME_NUM:]
-        y2 = light2[-FRAME_NUM:]
+        y11 = light1[-FRAME_NUM:]
+        y12 = light2[-FRAME_NUM:]
+        y21 = pos[-FRAME_NUM:]
 
         # Line にデータを設定する
-        self.line1.set_data(x, y1)
-        self.line2.set_data(x, y2)
+        self.line11.set_data(x, y11)
+        self.line12.set_data(x, y12)
+        self.line21.set_data(x, y21)
         # グラフの見栄えを調整する
-        self.ax.relim()
-        self.ax.autoscale_view()
+        self.ax[0].relim()
+        self.ax[0].autoscale_view()
+        self.ax[1].relim()
+        self.ax[1].autoscale_view()
         # 再描画する
         self.fig.canvas.draw()
         self.fig.canvas.flush_events()
@@ -108,6 +119,9 @@ class SerialClient():
                 elif x[0] == 'light2':
                     global light2
                     light2 = np.append(light2, int(x[1]))
+                elif x[0] == 'pos':
+                    global pos
+                    pos = np.append(pos, float(x[1]))
 
             # 送信
             if len(commands) > 0:
