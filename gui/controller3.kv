@@ -25,12 +25,14 @@ MainScreen3:
             foreground_color: [1,1,1,1]
             background_color: [0,0,0,1]
             cursor_color: [1,1,1,1]
-            on_text_validate: app.root.on_enter(self.text.encode('utf-8'))
+            on_text: app.root.handle_change(self.text.encode('utf-8'))
+            on_text_validate: app.root.handle_submit('')
 
         Button:
             size_hint_x: 30
             text: 'submit'
             background_color: [0, 0, 0]
+            on_press: app.root.handle_submit('')
 
     GraphView:
         pos_hint: {"y": 1}

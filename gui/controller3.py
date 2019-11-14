@@ -18,16 +18,22 @@ FRAME_TIME = 10 # 更新間隔(ms)
 FRAME_NUM = 200 # 画面に表示するデータ数
 
 commands = [] # 送信待ちコマンド
+input_value = '' # 入力中のコマンド
 # グラフのデータ
 light1 = np.zeros(FRAME_NUM)
 light2 = np.zeros(FRAME_NUM)
 pos = np.zeros(FRAME_NUM)
 
 class MainScreen3(BoxLayout):
-    def on_enter(self, value):
+    def handle_change(self, value):
+        global input_value
+        input_value = value
+
+    def handle_submit(self, value):
         global commands
-        commands.append(value)
-        print(value)
+        global input_value
+        commands.append(input_value)
+        print(input_value)
 
 class GraphView(BoxLayout):
     def __init__(self, *args, **kwargs):
