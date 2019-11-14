@@ -102,7 +102,7 @@ void loop() {
     // PID制御
     float du; // 制御量の変化
     float u; // 制御量
-    du = kp * (pos - pos_1) + pi * pos + pd * (pos - 2 * pos_1 + pis_2);
+    du = kp * (pos - pos_1) + ki * pos + kd * (pos - 2 * pos_1 + pis_2);
     pos_2 = pos_1;
     pos_1 = pos;
     u = u + du;
