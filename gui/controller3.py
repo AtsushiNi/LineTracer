@@ -20,6 +20,10 @@ FRAME_NUM = 200 # 画面に表示するデータ数
 
 commands = [] # 送信待ちコマンド
 input_value = '' # 入力中のコマンド
+
+# グラフ描画のstart/stop
+is_graph_updating = True
+
 # グラフのデータ
 light1 = np.zeros(FRAME_NUM)
 light2 = np.zeros(FRAME_NUM)
@@ -38,12 +42,16 @@ class MainScreen3(BoxLayout):
 
     def handle_start(self):
         global commands
+        global is_graph_updating
         commands.append("b1a")
+        is_graph_updating = True
         print("start")
 
     def handle_stop(self):
         global commands
+        global is_graph_updating
         commands.append("b0a")
+        is_graph_updating = False
         print("stop")
 
     def handle_mode_test(self):
@@ -108,6 +116,11 @@ class GraphView(BoxLayout):
         global light1
         global light2
         global pos
+        global is_graph_updating
+
+        # is_graph_updating == Falseならグラフ更新しない
+        if not is_graph_updating:
+            return
 
         # データを更新する
         x = np.linspace(1,FRAME_NUM,FRAME_NUM)
