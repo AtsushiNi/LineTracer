@@ -12,6 +12,48 @@ MainScreen3:
             pos: self.pos
             size: self.size
 
+    ActionBar:
+        ActionView:
+            canvas.before:
+                Color:
+                    rgba: 0.2, 0.2, 0.2, 1
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+
+            ActionPrevious:
+                title: "Tracer"
+
+            ActionOverflow:
+            
+            ActionButton:
+                text: "Start"
+                color: [0,1,1,1]
+                canvas.before:
+                    Color:
+                        rgba: 0.1, 0.1, 0.1, 1
+                    Rectangle:
+                        pos: [self.pos[0]+5,self.pos[1]]
+                        size: [self.size[0]-10,self.size[1]]
+
+            ActionButton:
+                text: "Stop"
+                color: [0,1,1,1]
+                canvas.before:
+                    Color:
+                        rgba: 0.1, 0.1, 0.1, 1
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+
+            ActionGroup:
+                text: "Mode"
+                ActionButton:
+                    text: "test"
+
+                ActionButton:
+                    text: "run"
+
     BoxLayout:
         height: "40dp"
         size_hint_y: None
@@ -37,3 +79,4 @@ MainScreen3:
 
     GraphView:
         pos_hint: {"y": 1}
+
