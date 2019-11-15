@@ -5,6 +5,8 @@ gui/ : pc側のguiプログラム
 
 # Usage
 
+実行前にgui/logsにlog.xlsxを作ってExcelを閉じておく
+
 実行方法
 ```bash
 cd gui

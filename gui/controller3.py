@@ -5,6 +5,8 @@ from kivy.clock import Clock
 from kivy.garden.matplotlib.backend_kivyagg import FigureCanvasKivyAgg
 from kivy.core.window import Window
 
+import openpyxl
+
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib
@@ -28,6 +30,7 @@ is_graph_updating = True
 light1 = np.zeros(FRAME_NUM)
 light2 = np.zeros(FRAME_NUM)
 pos = np.zeros(FRAME_NUM)
+time = np.zeros(FRAME_NUM)
 
 class MainScreen3(BoxLayout):
     def handle_change(self, value):
@@ -50,8 +53,23 @@ class MainScreen3(BoxLayout):
     def handle_stop(self):
         global commands
         global is_graph_updating
+        global light1
+        global light2
+        global time
+        global FRAME_NUM
+
         commands.append("b0a")
         is_graph_updating = False
+
+        wb = openpyxl.load_workbook('logs/log.xlsx')
+        sheet = wb['Sheet1']
+        for t in range(np.size(time)):
+            sheet.cell(row=t+1,column=1,value=t+1)
+            sheet.cell(row=t+1,column=2,value=time[t])
+            sheet.cell(row=t+1,column=3,value=light1[t])
+            sheet.cell(row=t+1,column=4,value=light2[t])
+        wb.save("logs/log.xlsx")
+        light1 =light2 = pos = time = np.zeros(FRAME_NUM)
         print("stop")
 
     def handle_mode_test(self):
@@ -179,6 +197,9 @@ class SerialClient():
                 elif x[0] == 'pos':
                     global pos
                     pos = np.append(pos, float(x[1]))
+                elif x[0] == 'time':
+                    global time
+                    time = np.append(time, int(x[1]))
 
             # 送信
             if len(commands) > 0:
