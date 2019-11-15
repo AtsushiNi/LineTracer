@@ -3,6 +3,7 @@ from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
 from kivy.clock import Clock
 from kivy.garden.matplotlib.backend_kivyagg import FigureCanvasKivyAgg
+from kivy.core.window import Window
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -54,6 +55,21 @@ class MainScreen3(BoxLayout):
         global commands
         commands.append("c0a")
         print("runMode")
+
+    def handle_kp_change(self, value):
+        global commands
+        commands.append("j"+str(value)+"a")
+        print("KP: "+str(value))
+
+    def handle_ki_change(self, value):
+        global commands
+        commands.append("k"+str(value)+"a")
+        print("KI: "+str(value))
+
+    def handle_kd_change(self, value):
+        global commands
+        commands.append("l"+str(value)+"a")
+        print("KD: "+str(value))
 
 class GraphView(BoxLayout):
     def __init__(self, *args, **kwargs):
@@ -120,6 +136,8 @@ class Controller3App(App):
         serialClient = SerialClient()
         serialClient.start()
         screen = MainScreen3()
+        Window.size = (1000,700)
+        Window.top = 50
         return screen
 
 # シリアル通信受信クラス

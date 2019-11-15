@@ -60,28 +60,104 @@ MainScreen3:
                     on_press: root.handle_mode_run()
 
     BoxLayout:
-        height: "40dp"
-        size_hint_y: None
-        spacing: 2
-        padding: [0,2,0,2]
+        id: controller
+        orientation: "vertical"
+        Label:
+            text: "  Controller"
+            height: "40dp"
+            size_hint_y: None
+            text_size: self.size
+            halign: "left"
+            valign: "middle"
+            font_size: '17px'
+            canvas.before:
+                Color:
+                    rgba: 0.1, 0.1, 0.1, 1
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+                Color:
+                    rgba: 0, 1, 1, 1
+                Line:
+                    points: self.pos[0]+10,self.pos[1]+2,self.pos[0]+50,self.pos[1]+2,self.size[0]-10,self.pos[1]+2
+                    width: 2
 
-        TextInput:
-            multiline: False
-            focus: True
-            size_hint_x: 70
-            color: 0,1,0,1
-            foreground_color: [1,1,1,1]
-            background_color: [0,0,0,1]
-            cursor_color: [1,1,1,1]
-            on_text: app.root.handle_change(self.text.encode('utf-8'))
-            on_text_validate: app.root.handle_submit('')
+        BoxLayout:
+            id: command
+            height: "40dp"
+            size_hint_y: None
+            spacing: 2
+            padding: [0,2,0,2]
 
-        Button:
-            size_hint_x: 30
-            text: 'submit'
-            color: [0,1,1,1]
-            background_color: [0, 0, 0]
-            on_press: app.root.handle_submit('')
+            TextInput:
+                multiline: False
+                focus: True
+                size_hint_x: 70
+                color: 0,1,0,1
+                foreground_color: [1,1,1,1]
+                background_color: [0,0,0,1]
+                cursor_color: [1,1,1,1]
+                on_text: app.root.handle_change(self.text.encode('utf-8'))
+                on_text_validate: app.root.handle_submit('')
+
+            Button:
+                size_hint_x: 30
+                text: 'submit'
+                color: [0,1,1,1]
+                background_color: [0, 0, 0]
+                on_press: app.root.handle_submit('')
+
+        BoxLayout:
+            id: sliders
+            orientation: "vertical"
+            canvas.before:
+                Color:
+                    rgba: 0, 0, 0, 1
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+
+            BoxLayout:
+                Label:
+                    text: "KP"
+                    size_hint_x: 1
+                Slider:
+                    id: kp
+                    min: 0
+                    max: 100
+                    size_hint_x: 8
+                    on_touch_up: root.handle_kp_change(self.value)
+                Label:
+                    text: '{:.0f}'.format(kp.value)
+                    size_hint_x: 1
+
+            BoxLayout:
+                Label:
+                    text: "kI"
+                    size_hint_x: 1
+                Slider:
+                    id: ki
+                    min: 0
+                    max: 100
+                    size_hint_x: 8
+                    on_touch_up: root.handle_ki_change(self.value)
+                Label:
+                    text: '{:.0f}'.format(ki.value)
+                    size_hint_x: 1
+
+            BoxLayout:
+                Label:
+                    text: "kd"
+                    size_hint_x: 1
+                Slider:
+                    id: kd
+                    min: 0
+                    max: 100
+                    size_hint_x: 8
+                    on_touch_up: root.handle_kd_change(self.value)
+                Label:
+                    text: '{:.0f}'.format(kd.value)
+                    size_hint_x: 1
 
     Label:
         text: "  Graph"
