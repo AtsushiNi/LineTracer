@@ -29,6 +29,7 @@ MainScreen3:
             ActionButton:
                 text: "Start"
                 color: [0,1,1,1]
+                on_press: root.handle_start()
                 canvas.before:
                     Color:
                         rgba: 0.1, 0.1, 0.1, 1
@@ -39,6 +40,7 @@ MainScreen3:
             ActionButton:
                 text: "Stop"
                 color: [0,1,1,1]
+                on_press: root.handle_stop()
                 canvas.before:
                     Color:
                         rgba: 0.1, 0.1, 0.1, 1
@@ -50,9 +52,13 @@ MainScreen3:
                 text: "Mode"
                 ActionButton:
                     text: "test"
+                    color: [0,1,1,1]
+                    on_press: root.handle_mode_test()
 
                 ActionButton:
                     text: "run"
+                    color: [0,1,1,1]
+                    on_press: root.handle_mode_run()
 
     BoxLayout:
         height: "40dp"

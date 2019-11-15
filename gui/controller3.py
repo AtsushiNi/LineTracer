@@ -35,6 +35,26 @@ class MainScreen3(BoxLayout):
         commands.append(input_value)
         print(input_value)
 
+    def handle_start(self):
+        global commands
+        commands.append("b1a")
+        print("start")
+
+    def handle_stop(self):
+        global commands
+        commands.append("b0a")
+        print("stop")
+
+    def handle_mode_test(self):
+        global commands
+        commands.append("c2a")
+        print("testMode")
+
+    def handle_mode_run(self):
+        global commands
+        commands.append("c0a")
+        print("runMode")
+
 class GraphView(BoxLayout):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

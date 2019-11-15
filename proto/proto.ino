@@ -11,7 +11,7 @@ int inputPointer = 0; // 値入力中に使うポインタ用
 
 // 入力で変更できるパラメータ
 int basicStatus = 0; // 基本ステータス。0:待機, 1:走行
-int runMode = 0; // 走行モード　0:ライントレース, 1:ラジコン
+int runMode = 0; // 走行モード　0:ライントレース, 1:ラジコン, 2:テスト
 int radioControllDirection = 0; // ラジコンモードの進路方向　0:直進, 1:右, 2: 左
 int basicSpeed = 250; // 走行スピード
 float reduceRacio = 0.2; // ラジコンモードでの左右減速比
