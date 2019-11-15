@@ -183,7 +183,7 @@ class SerialClient():
             # 送信
             if len(commands) > 0:
                 for command in commands:
-                    ser.write(command)
+                    ser.write(command.encode())
                 commands = []   
 
 if __name__ == '__main__':

@@ -121,6 +121,9 @@ void loop() {
         leftPower *= reduceRacio;
       break;
     }
+  } else if (runMode == 2) {
+    rightPower = basicSpeed;
+    leftPower = basicSpeed;
   }
 
   // モーター出力
@@ -139,18 +142,20 @@ void loop() {
     case 1:
       break;
     case 2:
-      Serial.print("light1:");
+      Serial.print("time:");
+      Serial.print(millis());
+      Serial.print(",light1:");
       Serial.print(rightData);
       Serial.print(",light2:");
       Serial.print(leftData);
-      Serial.print(",likelyPos1:")
-      Serial.print(likelyPos[0])
-      Serial.print(",likelyPos2:")
-      Serial.print(likelyPos[1])
-      Serial.print(",likelyPos3:")
-      Serial.print(likelyPos[2])
-      Serial.print(",likelyPos4:")
-      Serial.print(likelyPos[3])
+      Serial.print(",likelyPos1:");
+      Serial.print(likelyPos[0]);
+      Serial.print(",likelyPos2:");
+      Serial.print(likelyPos[1]);
+      Serial.print(",likelyPos3:");
+      Serial.print(likelyPos[2]);
+      Serial.print(",likelyPos4:");
+      Serial.print(likelyPos[3]);
       Serial.print(",pos:");
       Serial.println(pos);
       break;

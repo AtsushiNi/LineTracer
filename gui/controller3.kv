@@ -61,6 +61,7 @@ MainScreen3:
 
     BoxLayout:
         id: controller
+        size_hint_y: 0.3
         orientation: "vertical"
         Label:
             text: "  Controller"
@@ -80,7 +81,7 @@ MainScreen3:
                     rgba: 0, 1, 1, 1
                 Line:
                     points: self.pos[0]+10,self.pos[1]+2,self.pos[0]+50,self.pos[1]+2,self.size[0]-10,self.pos[1]+2
-                    width: 2
+                    width: 1.5
 
         BoxLayout:
             id: command
@@ -109,7 +110,6 @@ MainScreen3:
 
         BoxLayout:
             id: sliders
-            orientation: "vertical"
             canvas.before:
                 Color:
                     rgba: 0, 0, 0, 1
@@ -118,46 +118,53 @@ MainScreen3:
                     size: self.size
 
             BoxLayout:
-                Label:
-                    text: "KP"
-                    size_hint_x: 1
-                Slider:
-                    id: kp
-                    min: 0
-                    max: 100
-                    size_hint_x: 8
-                    on_touch_up: root.handle_kp_change(self.value)
-                Label:
-                    text: '{:.0f}'.format(kp.value)
-                    size_hint_x: 1
+                id: right_sliders
+                orientation: "vertical"
+                BoxLayout:
+                    Label:
+                        text: "KP"
+                        size_hint_x: 1
+                    Slider:
+                        id: kp
+                        min: 0
+                        max: 100
+                        size_hint_x: 8
+                        on_touch_up: root.handle_kp_change(self.value)
+                    Label:
+                        text: '{:.0f}'.format(kp.value)
+                        size_hint_x: 1
+
+                BoxLayout:
+                    Label:
+                        text: "kI"
+                        size_hint_x: 1
+                    Slider:
+                        id: ki
+                        min: 0
+                        max: 100
+                        size_hint_x: 8
+                        on_touch_up: root.handle_ki_change(self.value)
+                    Label:
+                        text: '{:.0f}'.format(ki.value)
+                        size_hint_x: 1
+
+                BoxLayout:
+                    Label:
+                        text: "kd"
+                        size_hint_x: 1
+                    Slider:
+                        id: kd
+                        min: 0
+                        max: 100
+                        size_hint_x: 8
+                        on_touch_up: root.handle_kd_change(self.value)
+                    Label:
+                        text: '{:.0f}'.format(kd.value)
+                        size_hint_x: 1
 
             BoxLayout:
-                Label:
-                    text: "kI"
-                    size_hint_x: 1
-                Slider:
-                    id: ki
-                    min: 0
-                    max: 100
-                    size_hint_x: 8
-                    on_touch_up: root.handle_ki_change(self.value)
-                Label:
-                    text: '{:.0f}'.format(ki.value)
-                    size_hint_x: 1
-
-            BoxLayout:
-                Label:
-                    text: "kd"
-                    size_hint_x: 1
-                Slider:
-                    id: kd
-                    min: 0
-                    max: 100
-                    size_hint_x: 8
-                    on_touch_up: root.handle_kd_change(self.value)
-                Label:
-                    text: '{:.0f}'.format(kd.value)
-                    size_hint_x: 1
+                id: left_sliders
+                orientation: "vertical"
 
     Label:
         text: "  Graph"
