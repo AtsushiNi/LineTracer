@@ -61,3 +61,21 @@ void calcuLikelyPos(float sensorPos, int data, float likelyPos[2]) {
     likelyPos[1] = -100;
   }
 }
+
+// 4つのセンサーから現在位置を割り出す。主なセンサー1つと周りのセンサーの比から算出する簡単バージョン
+// light1が一番右のセンサー
+float calcuPosBy4Simple(int light1, int light2, int light3, int light4, int *sensor_ranges) {
+  // 線を認識していない場合は404を返す
+  if (light1 > (sensor_ranges[0][1]-(sensor_ranges[0][1]-sensor_ranges[0][0])/10.0)
+      && light2 > (sensor_ranges[1][1]-(sensor_ranges[1][1]-sensor_ranges[1][0])/10.0)
+      && light3 > (sensor_ranges[2][1]-(sensor_ranges[2][1]-sensor_ranges[2][0])/10.0)
+      && light4 > (sensor_ranges[3][1]-(sensor_ranges[3][1]-sensor_ranges[3][0])/10.0)) {
+        return 404
+      }
+  // 4つのセンサーの中で一番値が小さいものを求める
+  if (light1 < light2 && light1 < light3 && light1 < light4) {
+    // TODO
+  } else if (light2 < light3 && light2 < light4) {
+    // TODO
+  }
+}
