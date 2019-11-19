@@ -16,6 +16,8 @@ import re
 import serial
 import threading
 
+import analyseModule
+
 # 定数
 FRAME_TIME = 10 # 更新間隔(ms)
 FRAME_NUM = 200 # 画面に表示するデータ数
@@ -61,6 +63,12 @@ class MainScreen3(BoxLayout):
         commands.append("b0a")
         is_graph_updating = False
 
+        # 最初の200行は0で埋まっているので削除
+        light1 = light1[201::-1]
+        light2 = light2[201::-1]
+        time = time[201::-1]
+
+        # Excelにログ保存
         wb = openpyxl.load_workbook('logs/log.xlsx')
         sheet = wb['Sheet1']
         for t in range(np.size(time)):
@@ -69,6 +77,10 @@ class MainScreen3(BoxLayout):
             sheet.cell(row=t+1,column=3,value=light1[t])
             sheet.cell(row=t+1,column=4,value=light2[t])
         wb.save("logs/log.xlsx")
+
+        analyseModule.analyseData(light1, light2)
+
+        # データ初期化
         light1 =light2 = pos = time = np.zeros(FRAME_NUM)
         print("stop")
 
