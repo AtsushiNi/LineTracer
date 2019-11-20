@@ -64,9 +64,10 @@ class MainScreen3(BoxLayout):
         is_graph_updating = False
 
         # 最初の200行は0で埋まっているので削除
-        light1 = light1[201::-1]
-        light2 = light2[201::-1]
-        time = time[201::-1]
+        while time[0] == 0:
+            numpy.delete(light1, 0)
+            numpy.delete(light2, 0)
+            numpy.delete(time, 0)
 
         # Excelにログ保存
         wb = openpyxl.load_workbook('logs/log.xlsx')
