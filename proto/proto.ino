@@ -1,8 +1,10 @@
 // Pin
 int rightMoterPin = 11;
 int leftMoterPin = 3;
-int rightSensorPin = A0;
-int leftSensorPin = A1;
+int sensorPin1 = A0;
+int sensorPin2 = A1;
+int sensorPin3 = A2;
+int sensorPin4 = A3;
 
 // Bluetooth入力用
 char inputMode = 'a'; // 入力モード。aは入力待機
@@ -137,13 +139,15 @@ void loop() {
   }
 
   // 光センサー入力
-  int rightData = analogRead(rightSensorPin);
-  int leftData = analogRead(leftSensorPin);
+  int sensor1Data = analogRead(sensorPin1);
+  int sensor2Data = analogRead(sensorPin2);
+  int sensor3Data = analogRead(sensorPin3);
+  int sensor4Data = analogRead(sensorPin4);
 
   // 現在位置の算出
   float pos = 0; //線上が0. 機体の右へのずれが正. 両端のセンサー位置が±1
   float likelyPos[4]; // 機体位置の候補。表示用
-  pos = calcuPosBy2(rightData, leftData, likelyPos);
+  pos = calcuPosBy2(sensor2Data, sensor3Data, likelyPos);
 
   // モーター出力計算
   float rightPower = 0; // 右モーター出力
@@ -195,9 +199,13 @@ void loop() {
       Serial.print("time:");
       Serial.print(millis());
       Serial.print(",light1:");
-      Serial.print(rightData);
+      Serial.print(sensor1Data);
       Serial.print(",light2:");
-      Serial.print(leftData);
+      Serial.print(sensor2Data);
+      Serial.print(",light3:");
+      Serial.print(sensor3Data);
+      Serial.print(",light4:");
+      Serial.print(sensor4Data);
       Serial.print(",likelyPos1:");
       Serial.print(likelyPos[0]);
       Serial.print(",likelyPos2:");

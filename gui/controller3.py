@@ -31,6 +31,8 @@ is_graph_updating = True
 # グラフのデータ
 light1 = np.zeros(FRAME_NUM)
 light2 = np.zeros(FRAME_NUM)
+light3 = np.zeros(FRAME_NUM)
+light4 = np.zeros(FRAME_NUM)
 pos = np.zeros(FRAME_NUM)
 time = np.zeros(FRAME_NUM)
 
@@ -134,6 +136,8 @@ class MainScreen3(BoxLayout):
         global is_graph_updating
         global light1
         global light2
+        global light3
+        global light4
         global time
         global FRAME_NUM
 
@@ -144,6 +148,8 @@ class MainScreen3(BoxLayout):
         while time[0] == 0:
             np.delete(light1, 0)
             np.delete(light2, 0)
+            np.delete(light3, 0)
+            np.delete(light4, 0)
             np.delete(time, 0)
 
         # Excelにログ保存
@@ -154,10 +160,12 @@ class MainScreen3(BoxLayout):
             sheet.cell(row=t+1,column=2,value=time[t])
             sheet.cell(row=t+1,column=3,value=light1[t])
             sheet.cell(row=t+1,column=4,value=light2[t])
+            sheet.cell(row=t+1,column=5,value=light3[t])
+            sheet.cell(row=t+1,column=6,value=light4[t])
         wb.save("logs/log.xlsx")
 
         # データ初期化
-        light1 =light2 = pos = time = np.zeros(FRAME_NUM)
+        light1 =light2 = light3 = light4 = pos = time = np.zeros(FRAME_NUM)
         print("stop")
 
     def handle_mode_test(self):
@@ -208,6 +216,9 @@ class GraphView(BoxLayout):
         # 最初に描画したときの Line も保存しておく
         self.line11, = self.ax[0].plot(x, y)
         self.line12, = self.ax[0].plot(x, y)
+        self.line13, = self.ax[0].plot(x, y)
+        self.line14, = self.ax[0].plot(x, y)
+
         self.line21, = self.ax[1].plot(x, y)
 
         # ウィジェットとしてグラフを追加する
@@ -221,6 +232,8 @@ class GraphView(BoxLayout):
 
         global light1
         global light2
+        global light3
+        global light4
         global pos
         global is_graph_updating
 
@@ -232,11 +245,16 @@ class GraphView(BoxLayout):
         x = np.linspace(1,FRAME_NUM,FRAME_NUM)
         y11 = light1[-FRAME_NUM:]
         y12 = light2[-FRAME_NUM:]
+        y13 = light3[-FRAME_NUM:]
+        y14 = light4[-FRAME_NUM:]
+
         y21 = pos[-FRAME_NUM:]
 
         # Line にデータを設定する
         self.line11.set_data(x, y11)
         self.line12.set_data(x, y12)
+        self.line13.set_data(x, y13)
+        self.line14.set_data(x, y14)
         self.line21.set_data(x, y21)
         # グラフの見栄えを調整する
         self.ax[0].relim()
@@ -282,6 +300,12 @@ class SerialClient():
                 elif x[0] == 'light2':
                     global light2
                     light2 = np.append(light2, int(x[1]))
+                elif x[0] == 'light3':
+                    global light3
+                    light3 = np.append(light3, int(x[1]))
+                elif x[0] == 'light4':
+                    global light4
+                    light4 = np.append(light4, int(x[1]))
                 elif x[0] == 'pos':
                     global pos
                     pos = np.append(pos, float(x[1]))
