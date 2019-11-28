@@ -37,13 +37,62 @@ time = np.zeros(FRAME_NUM)
 class MainScreen3(BoxLayout):
     def handle_change(self, value):
         global input_value
-        input_value = value
+        input_value = value.decode()
 
     def handle_submit(self, value):
         global commands
         global input_value
-        commands.append(input_value)
-        print(input_value)
+        if ',' in input_value:
+            # センサーデータの解析
+            params11, params12, params21, params22 = analyseModule.analyseData(input_value.split(','))
+            # 右のセンサの前半から順に近似式の係数を送信していく。低い次数から順。指数表記になるような小さすぎる高次の係数は無視
+            # commands.append("m")
+            # for n in params11[::-1]:
+            #     if not ('e' in str(n)):
+            #         commands.append(str(n))
+            #         commands.append(',')
+            # for n in params12[::-1]:
+            #     if not ('e' in str(n)):
+            #         commands.append(str(n))
+            #         commands.append(',')
+            # for n in params21[::-1]:
+            #     if not ('e' in str(n)):
+            #         commands.append(str(n))
+            #         commands.append(',')
+            # for n in params22[::-1]:
+            #     if not ('e' in str(n)):
+            #         commands.append(str(n))
+            #         commands.append(',')
+            # commands.append('a')
+            # print(commands)
+
+            commands.append("A")
+            commands.append(params11[-1])
+            commands.append("a")
+            commands.append("B")
+            commands.append(params11[-2])
+            commands.append("a")
+            commands.append("C")
+            commands.append(params12[-1])
+            commands.append("a")
+            commands.append("D")
+            commands.append(params12[-2])
+            commands.append("a")
+            commands.append("E")
+            commands.append(params21[-1])
+            commands.append("a")
+            commands.append("F")
+            commands.append(params21[-2])
+            commands.append("a")
+            commands.append("G")
+            commands.append(params22[-1])
+            commands.append("a")
+            commands.append("H")
+            commands.append(params22[-2])
+            commands.append("a")
+        else:
+            commands.append(input_value)
+            print(input_value)
 
     def handle_start(self):
         global commands
@@ -65,9 +114,9 @@ class MainScreen3(BoxLayout):
 
         # 最初の200行は0で埋まっているので削除
         while time[0] == 0:
-            numpy.delete(light1, 0)
-            numpy.delete(light2, 0)
-            numpy.delete(time, 0)
+            np.delete(light1, 0)
+            np.delete(light2, 0)
+            np.delete(time, 0)
 
         # Excelにログ保存
         wb = openpyxl.load_workbook('logs/log.xlsx')
@@ -78,8 +127,6 @@ class MainScreen3(BoxLayout):
             sheet.cell(row=t+1,column=3,value=light1[t])
             sheet.cell(row=t+1,column=4,value=light2[t])
         wb.save("logs/log.xlsx")
-
-        analyseModule.analyseData(light1, light2)
 
         # データ初期化
         light1 =light2 = pos = time = np.zeros(FRAME_NUM)

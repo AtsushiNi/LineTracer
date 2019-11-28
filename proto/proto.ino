@@ -21,6 +21,7 @@ int outputMode = 2; // 表示出力の様式　0:ArduinoIDE, 1:Android, 2:Python
 float kp = 0; // 比例制御のパラメータ
 float ki = 0; // 積分制御のパラメータ
 float kd = 0; // 微分制御のパラメータ
+float polyfit_params[4][2][2]; // センサ値解析用近似式の係数。右センサー前半から、低次項から順
 
 // PID制御の変数
 float pos_1 = 0; // 前回の位置
@@ -37,7 +38,7 @@ void loop() {
   if (Serial.available() > 0) {
     char input = (char)Serial.read();
 
-    if ('a' <= input && input <= 'z') { // コマンド入力
+    if (('a' <= input && input <= 'z') || ('A' <= input && input <= 'Z')) { // コマンド入力
       if (input == 'a' && inputMode != 'a') { // モードがa以外からaに変わるとパラメータにinputValueが代入される
         char tmp[inputPointer];
         memcpy(tmp, inputValue, inputPointer);
@@ -75,12 +76,36 @@ void loop() {
           case 'l':
             kd = atof(tmp);
             break;
+          case 'A':
+            polyfit_params[0][0][0] = atof(tmp);
+            break;
+          case 'B':
+            polyfit_params[0][0][1] = atof(tmp);
+            break;
+          case 'C':
+            polyfit_params[0][1][0] = atof(tmp);
+            break;
+          case 'D':
+            polyfit_params[0][1][1] = atof(tmp);
+            break;
+          case 'E':
+            polyfit_params[1][0][0] = atof(tmp);
+            break;
+          case 'F':
+            polyfit_params[1][0][1] = atof(tmp);
+            break;
+          case 'G':
+            polyfit_params[1][1][0] = atof(tmp);
+            break;
+          case 'H':
+            polyfit_params[1][1][1] = atof(tmp);
+            break;
         }
         inputPointer = 0;
       }
       inputMode = input;
 
-    } else if (('0' <= input && input <= '9') || input == '.') { // 値入力
+    } else if (('0' <= input && input <= '9') || input == '.' || input == '-' || input == ',') { // 値入力
       inputValue[inputPointer] = input;
       ++inputPointer;
     }
