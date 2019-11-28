@@ -103,6 +103,30 @@ void loop() {
           case 'H':
             polyfit_params[1][1][1] = atof(tmp);
             break;
+          case 'I':
+            polyfit_params[2][0][0] = atof(tmp);
+            break;
+          case 'J':
+            polyfit_params[2][0][1] = atof(tmp);
+            break;
+          case 'K':
+            polyfit_params[2][1][0] = atof(tmp);
+            break;
+          case 'L':
+            polyfit_params[2][1][1] = atof(tmp);
+            break;
+          case 'M':
+            polyfit_params[3][0][0] = atof(tmp);
+            break;
+          case 'N':
+            polyfit_params[3][0][1] = atof(tmp);
+            break;
+          case 'O':
+            polyfit_params[3][1][0] = atof(tmp);
+            break;
+          case 'P':
+            polyfit_params[3][1][1] = atof(tmp);
+            break;
           case 'S':
             sensor_ranges[0][0] = atoi(tmp);
             break;
