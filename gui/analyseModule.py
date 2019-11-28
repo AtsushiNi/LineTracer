@@ -28,9 +28,8 @@ def analyseData(borders):
         # 線を認識しなくなったら終わり
         if data > int(borders[0]):
             break
-        
         trans_data = np.append(trans_data, [[data, -index/frames_par_one]],axis=0)
-        
+
     # 近似式の係数の計算
     params11 = np.polyfit(trans_data[:,0], trans_data[:,1], polyfit_index_num)
 
@@ -38,11 +37,10 @@ def analyseData(borders):
     trans_data = np.array([[min[0],0]]) # 処理対象範囲を位置とセンサ値で転置した行列
     for index, data in enumerate(light1[min_index[0]:-1:]):
         # 線を認識しなくなったら終わり
-        if data > int(borders[1]):
+        if data > int(borders[0]):
             break
-        
         trans_data = np.append(trans_data, [[data, index/frames_par_one]], axis=0)
-        
+
     # 近似式の係数の計算
     params12 = np.polyfit(trans_data[:,0], trans_data[:,1], polyfit_index_num)
 
@@ -50,11 +48,10 @@ def analyseData(borders):
     trans_data = np.array([[min[0],0]]) # 処理対象範囲を位置とセンサ値で転置した行列
     for index, data in enumerate(light2[min_index[1]::-1]):
         # 線を認識しなくなったら終わり
-        if data > int(borders[2]):
+        if data > int(borders[1]):
             break
-        
         trans_data = np.append(trans_data, [[data, -index/frames_par_one]],axis=0)
-        
+
     # 近似式の係数の計算
     params21 = np.polyfit(trans_data[:,0], trans_data[:,1], polyfit_index_num)
 
@@ -62,11 +59,11 @@ def analyseData(borders):
     trans_data = np.array([[min[0],0]]) # 処理対象範囲を位置とセンサ値で転置した行列
     for index, data in enumerate(light2[min_index[1]:-1:]):
         # 線を認識しなくなったら終わり
-        if data > int(borders[3]):
+        if data > int(borders[1]):
             break
-        
+
         trans_data = np.append(trans_data, [[data, index/frames_par_one]], axis=0)
-        
+
     # 近似式の係数の計算
     params22 = np.polyfit(trans_data[:,0], trans_data[:,1], polyfit_index_num)
 

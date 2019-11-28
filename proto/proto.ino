@@ -22,6 +22,7 @@ float kp = 0; // 比例制御のパラメータ
 float ki = 0; // 積分制御のパラメータ
 float kd = 0; // 微分制御のパラメータ
 float polyfit_params[4][2][2]; // センサ値解析用近似式の係数。右センサー前半から、低次項から順
+int sensor_ranges[4][2]; // センサーの有効範囲。右センサーから。[high][low]
 
 // PID制御の変数
 float pos_1 = 0; // 前回の位置
@@ -99,6 +100,30 @@ void loop() {
             break;
           case 'H':
             polyfit_params[1][1][1] = atof(tmp);
+            break;
+          case 'S':
+            sensor_ranges[0][0] = atoi(tmp);
+            break;
+          case 'T':
+            sensor_ranges[0][1] = atoi(tmp);
+            break;
+          case 'U':
+            sensor_ranges[1][0] = atoi(tmp);
+            break;
+          case 'V':
+            sensor_ranges[1][1] = atoi(tmp);
+            break;
+          case 'W':
+            sensor_ranges[2][0] = atoi(tmp);
+            break;
+          case 'X':
+            sensor_ranges[2][1] = atoi(tmp);
+            break;
+          case 'Y':
+            sensor_ranges[3][0] = atoi(tmp);
+            break;
+          case 'Z':
+            sensor_ranges[3][1] = atoi(tmp);
             break;
         }
         inputPointer = 0;
