@@ -233,15 +233,16 @@ class GraphView(BoxLayout):
         self.ax[0].tick_params(axis='x', colors="0.8")
         self.ax[0].tick_params(axis='y', colors="0.8")
         self.ax[0].set_facecolor((0.4, 0.4, 0.4, 1))
+        self.ax[0].grid(axis='y')
         self.ax[1].tick_params(axis='x', colors="0.8")
         self.ax[1].tick_params(axis='y', colors="0.8")
         self.ax[1].set_facecolor((0.4, 0.4, 0.4, 1))
 
         # 最初に描画したときの Line も保存しておく
-        self.line11, = self.ax[0].plot(x, y)
-        self.line12, = self.ax[0].plot(x, y)
-        self.line13, = self.ax[0].plot(x, y)
-        self.line14, = self.ax[0].plot(x, y)
+        self.line11, = self.ax[0].plot(x, y, label="light1")
+        self.line12, = self.ax[0].plot(x, y, label="light2")
+        self.line13, = self.ax[0].plot(x, y, label="light3")
+        self.line14, = self.ax[0].plot(x, y, label="light4")
 
         self.line21, = self.ax[1].plot(x, y)
 
@@ -283,6 +284,7 @@ class GraphView(BoxLayout):
         # グラフの見栄えを調整する
         self.ax[0].relim()
         self.ax[0].autoscale_view()
+        self.ax[0].legend(loc='upper left')
         self.ax[1].relim()
         self.ax[1].autoscale_view()
         # 再描画する
