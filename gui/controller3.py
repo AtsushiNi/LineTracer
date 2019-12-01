@@ -170,11 +170,11 @@ class MainScreen3(BoxLayout):
 
         # 最初の200行は0で埋まっているので削除
         while time[0] == 0:
-            np.delete(light1, 0)
-            np.delete(light2, 0)
-            np.delete(light3, 0)
-            np.delete(light4, 0)
-            np.delete(time, 0)
+            light1 = np.delete(light1, 0)
+            light2 = np.delete(light2, 0)
+            light3 = np.delete(light3, 0)
+            light4 = np.delete(light4, 0)
+            time = np.delete(time, 0)
 
         # Excelにログ保存
         wb = openpyxl.load_workbook('logs/log.xlsx')
