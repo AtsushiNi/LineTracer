@@ -38,6 +38,9 @@ int sensor_borders[4]; // センサーの有効範囲(線を見失っている�
 float pos_1 = 0; // 前回の位置
 float pos_2 = 0; // 前々回の位置
 
+// 線を見失った時のための変数
+int direction_his = 1;
+
 void setup() {
   Serial.begin(9600);
   pinMode(rightMoterPin, OUTPUT);
@@ -172,16 +175,34 @@ void loop() {
   float leftPower = 0; // 左モーター出力
 
   if (runMode == 0) {
+    // 線を見失ったときは、直近のデータを元に旋回
+    if (pos == 404) {
+      if (direction_his == 1) {
+        rightPower = basicSpeed;
+        leftPower = 0;
+      } else {
+        rightPower = 0;
+        leftPower = basicSpeed;
+      }
+    } else {
     // PID制御
-    float du; // 制御量の変化
-    float u; // 制御量
-    du = kp * (pos - pos_1) + ki * pos + kd * (pos - 2 * pos_1 + pos_2);
-    pos_2 = pos_1;
-    pos_1 = pos;
-    u = u + du;
-    // 制御量からモーター出力量
-    rightPower = basicSpeed + u;
-    leftPower = basicSpeed - u;
+      // direction_hisを更新
+      if (pos < 0) {
+        direction_his = 1;
+      } else if (pos > 0) {
+        direction_his = -1;
+      }
+      
+      float du; // 制御量の変化
+      float u; // 制御量
+      du = kp * (pos - pos_1) + ki * pos + kd * (pos - 2 * pos_1 + pos_2);
+      pos_2 = pos_1;
+      pos_1 = pos;
+      u = u + du;
+      // 制御量からモーター出力量
+      rightPower = basicSpeed + u;
+      leftPower = basicSpeed - u;
+    }
   } else if (runMode == 1) {
     rightPower = (float)basicSpeed;
     leftPower = (float)basicSpeed;
