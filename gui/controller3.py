@@ -46,7 +46,7 @@ class MainScreen3(BoxLayout):
         global input_value
         if ',' in input_value:
             # センサーデータの解析
-            params11, params12, params21, params22 = analyseModule.analyseData(input_value.split(','))
+            params11, params12, params21, params22, params31, params32, params41, params42 = analyseModule.analyseData(input_value.split(','))
             # 右のセンサの前半から順に近似式の係数を送信していく。低い次数から順。指数表記になるような小さすぎる高次の係数は無視
             # commands.append("m")
             # for n in params11[::-1]:
@@ -119,30 +119,18 @@ class MainScreen3(BoxLayout):
             commands.append("a")
 
             # センサの閾値の送信
-            low_borders = input_value.split(',')
-            commands.append("S")
-            commands.append(int(low_borders[0]))
-            commands.append("a")
-            commands.append("T")
-        #    commands.append(int(low_borders[0]))
-            commands.append("a")
-            commands.append("U")
-            commands.append(int(low_borders[1]))
-            commands.append("a")
-            commands.append("V")
-        #    commands.append(int(low_borders[0]))
-            commands.append("a")
+            sensor_borders = input_value.split(',')
             commands.append("W")
-            commands.append(int(low_borders[2]))
+            commands.append(int(sonsor_borders[0]))
             commands.append("a")
             commands.append("X")
-        #    commands.append(int(low_borders[0]))
+            commands.append(int(sonsor_borders[1]))
             commands.append("a")
-            commands.append("")
-            commands.append(int(low_borders[3]))
+            commands.append("Y")
+            commands.append(int(sonsor_borders[2]))
             commands.append("a")
-            commands.append("S")
-        #    commands.append(int(low_borders[0]))
+            commands.append("Z")
+            commands.append(int(sonsor_borders[3]))
             commands.append("a")
         else:
             commands.append(input_value)

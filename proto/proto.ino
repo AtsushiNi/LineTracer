@@ -23,8 +23,16 @@ int outputMode = 2; // 表示出力の様式　0:ArduinoIDE, 1:Android, 2:Python
 float kp = 0; // 比例制御のパラメータ
 float ki = 0; // 積分制御のパラメータ
 float kd = 0; // 微分制御のパラメータ
-float polyfit_params[4][2][2]; // センサ値解析用近似式の係数。右センサー前半から、低次項から順
-int sensor_ranges[4][2]; // センサーの有効範囲。右センサーから。[high][low]
+// センサ値解析用近似式の係数。右センサー前半から、低次項から順
+float polyfit_params_11[2];
+float polyfit_params_12[2];
+float polyfit_params_21[2];
+float polyfit_params_22[2];
+float polyfit_params_31[2];
+float polyfit_params_32[2];
+float polyfit_params_41[2];
+float polyfit_params_42[2];
+int sensor_borders[4]; // センサーの有効範囲(線を見失っているかどうかのボーダー値)。右センサーから。
 
 // PID制御の変数
 float pos_1 = 0; // 前回の位置
@@ -80,76 +88,66 @@ void loop() {
             kd = atof(tmp);
             break;
           case 'A':
-            polyfit_params[0][0][0] = atof(tmp);
+            polyfit_params_11[0] = atof(tmp);
             break;
           case 'B':
-            polyfit_params[0][0][1] = atof(tmp);
+            polyfit_params_11[1] = atof(tmp);
             break;
           case 'C':
-            polyfit_params[0][1][0] = atof(tmp);
+            polyfit_params_12[0] = atof(tmp);
             break;
           case 'D':
-            polyfit_params[0][1][1] = atof(tmp);
+            polyfit_params_12[1] = atof(tmp);
             break;
           case 'E':
-            polyfit_params[1][0][0] = atof(tmp);
+            polyfit_params_21[0] = atof(tmp);
             break;
           case 'F':
-            polyfit_params[1][0][1] = atof(tmp);
+            polyfit_params_21[1] = atof(tmp);
             break;
           case 'G':
-            polyfit_params[1][1][0] = atof(tmp);
+            polyfit_params_22[0] = atof(tmp);
             break;
           case 'H':
-            polyfit_params[1][1][1] = atof(tmp);
+            polyfit_params_22[1] = atof(tmp);
             break;
           case 'I':
-            polyfit_params[2][0][0] = atof(tmp);
+            polyfit_params_31[0] = atof(tmp);
             break;
           case 'J':
-            polyfit_params[2][0][1] = atof(tmp);
+            polyfit_params_31[1] = atof(tmp);
             break;
           case 'K':
-            polyfit_params[2][1][0] = atof(tmp);
+            polyfit_params_32[0] = atof(tmp);
             break;
           case 'L':
-            polyfit_params[2][1][1] = atof(tmp);
+            polyfit_params_32[1] = atof(tmp);
             break;
           case 'M':
-            polyfit_params[3][0][0] = atof(tmp);
+            polyfit_params_41[0] = atof(tmp);
             break;
           case 'N':
-            polyfit_params[3][0][1] = atof(tmp);
+            polyfit_params_41[1] = atof(tmp);
             break;
           case 'O':
-            polyfit_params[3][1][0] = atof(tmp);
+            polyfit_params_42[0] = atof(tmp);
             break;
           case 'P':
-            polyfit_params[3][1][1] = atof(tmp);
-            break;
-          case 'S':
-            sensor_ranges[0][0] = atoi(tmp);
-            break;
-          case 'T':
-            sensor_ranges[0][1] = atoi(tmp);
-            break;
-          case 'U':
-            sensor_ranges[1][0] = atoi(tmp);
-            break;
-          case 'V':
-            sensor_ranges[1][1] = atoi(tmp);
+            polyfit_params_42[1] = atof(tmp);
             break;
           case 'W':
-            sensor_ranges[2][0] = atoi(tmp);
+            sensor_borders[0] = atoi(tmp);
             break;
           case 'X':
-            sensor_ranges[2][1] = atoi(tmp);
+            sensor_borders[1] = atoi(tmp);
             break;
           case 'Y':
-            sensor_ranges[3][0] = atoi(tmp);
+            sensor_borders[2] = atoi(tmp);
             break;
           case 'Z':
-            sensor_ranges[3][1] = atoi(tmp);
+            sensor_borders[3] = atoi(tmp);
+            setParams(polyfit_params_11, polyfit_params_12, polyfit_params_21, polyfit_params_22, polyfit_params_31, polyfit_params_32, polyfit_params_41, polyfit_params_42);
+            setBorders(sensor_borders);
             break;
         }
         inputPointer = 0;
@@ -163,15 +161,11 @@ void loop() {
   }
 
   // 光センサー入力
-  int sensor1Data = analogRead(sensorPin1);
-  int sensor2Data = analogRead(sensorPin2);
-  int sensor3Data = analogRead(sensorPin3);
-  int sensor4Data = analogRead(sensorPin4);
+  int sensorDatas[4] = {analogRead(sensorPin1), analogRead(sensorPin2), analogRead(sensorPin3), analogRead(sensorPin4)};
 
   // 現在位置の算出
   float pos = 0; //線上が0. 機体の右へのずれが正. 両端のセンサー位置が±1
-  float likelyPos[4]; // 機体位置の候補。表示用
-  pos = calcuPosBy2(sensor2Data, sensor3Data, likelyPos);
+  pos = calcuPosBy4(sensorDatas);
 
   // モーター出力計算
   float rightPower = 0; // 右モーター出力
@@ -223,21 +217,13 @@ void loop() {
       Serial.print("time:");
       Serial.print(millis());
       Serial.print(",light1:");
-      Serial.print(sensor1Data);
+      Serial.print(sensorDatas[0]);
       Serial.print(",light2:");
-      Serial.print(sensor2Data);
+      Serial.print(sensorDatas[1]);
       Serial.print(",light3:");
-      Serial.print(sensor3Data);
+      Serial.print(sensorDatas[2]);
       Serial.print(",light4:");
-      Serial.print(sensor4Data);
-      Serial.print(",likelyPos1:");
-      Serial.print(likelyPos[0]);
-      Serial.print(",likelyPos2:");
-      Serial.print(likelyPos[1]);
-      Serial.print(",likelyPos3:");
-      Serial.print(likelyPos[2]);
-      Serial.print(",likelyPos4:");
-      Serial.print(likelyPos[3]);
+      Serial.print(sensorDatas[3]);
       Serial.print(",pos:");
       Serial.println(pos);
       break;
