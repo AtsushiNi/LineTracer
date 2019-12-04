@@ -15,7 +15,7 @@ int inputPointer = 0; // 値入力中に使うポインタ用
 int basicStatus = 0; // 基本ステータス。0:待機, 1:走行
 int runMode = 0; // 走行モード　0:ライントレース, 1:ラジコン, 2:テスト
 int radioControllDirection = 0; // ラジコンモードの進路方向　0:直進, 1:右, 2: 左
-int basicSpeed = 250; // 走行スピード
+int basicSpeed = 250; // 走行スピード. アナログ出力の最大は255
 float reduceRacio = 0.2; // ラジコンモードでの左右減速比
 int outputMoterPower = 0; // モーター出力値を出力するかどうか 0:しない, 1:する
 int outputLightSensor = 1; // 光センサーの値を出力するかどうか 0:しない, 1:する
@@ -192,7 +192,7 @@ void loop() {
       } else if (pos > 0) {
         direction_his = -1;
       }
-      
+
       float du; // 制御量の変化
       float u; // 制御量
       du = kp * (pos - pos_1) + ki * pos + kd * (pos - 2 * pos_1 + pos_2);
@@ -221,6 +221,17 @@ void loop() {
 
   // モーター出力
   if (basicStatus == 1) {
+    if (rightPower < 0) {
+      rightPower = 0;
+    } else if (rightPower > 255) {
+      rightPower = 255;
+    }
+    if (leftPower < 0) {
+      leftPower = 0;
+    } else if (leftPower > 255) {
+      leftPower = 255;
+    }
+    
     analogWrite(rightMoterPin, rightPower);
     analogWrite(leftMoterPin, leftPower);
   } else {
