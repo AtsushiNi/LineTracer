@@ -194,8 +194,8 @@ void loop() {
       break;
     }
   } else if (runMode == 2) {
-    rightPower = basicSpeed;
-    leftPower = basicSpeed;
+    rightPower = 0;
+    leftPower = 0;
   }
 
   // モーター出力
