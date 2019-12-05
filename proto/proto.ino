@@ -248,10 +248,6 @@ void loop() {
     case 2:
       Serial.print("time:");
       Serial.print(millis());
-      //  Serial.print(",basicstatus:");
-      //  Serial.print(runMode);
-      //  Serial.print(",runmode:");
-      //  Serial.print(basicStatus);
       Serial.print(",light1:");
       Serial.print(sensorDatas[0]);
       Serial.print(",light2:");
