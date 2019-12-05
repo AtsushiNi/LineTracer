@@ -1,4 +1,4 @@
-// Pin
+  // Pin
 int rightMoterPin = 11;
 int leftMoterPin = 3;
 int sensorPin1 = A0;
@@ -231,7 +231,7 @@ void loop() {
     } else if (leftPower > 255) {
       leftPower = 255;
     }
-    
+
     analogWrite(rightMoterPin, rightPower);
     analogWrite(leftMoterPin, leftPower);
   } else {
@@ -248,6 +248,10 @@ void loop() {
     case 2:
       Serial.print("time:");
       Serial.print(millis());
+      //  Serial.print(",basicstatus:");
+      //  Serial.print(runMode);
+      //  Serial.print(",runmode:");
+      //  Serial.print(basicStatus);
       Serial.print(",light1:");
       Serial.print(sensorDatas[0]);
       Serial.print(",light2:");

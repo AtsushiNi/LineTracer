@@ -115,18 +115,18 @@ def analyseData(borders):
     return params11, params12, params21, params22, params31, params32, params41, params42
 
 def getDataFromExcel():
-    wb = openpyxl.load_workbook('logs/sampleLog.xlsx')
+    wb = openpyxl.load_workbook('logs/sampleLogBy4Sensors.xlsx')
     sheet = wb['Sheet1']
 
     # 先頭のデータ取得
-    index = np.array([sheet['A201'].value])
-    time = np.array([sheet['B201'].value])
-    light1 = np.array([sheet['C201'].value])
-    light2 = np.array([sheet['D201'].value])
-    light3 = np.array([sheet['E201'].value])
-    light4 = np.array([sheet['F201'].value])
+    index = np.array([sheet['A1'].value])
+    time = np.array([sheet['B1'].value])
+    light1 = np.array([sheet['C1'].value])
+    light2 = np.array([sheet['D1'].value])
+    light3 = np.array([sheet['E1'].value])
+    light4 = np.array([sheet['F1'].value])
     # 範囲データ取得
-    sheet_range = sheet['A202':'F305']
+    sheet_range = sheet['A2':'F130']
     # 範囲データを順次処理
     for row in sheet_range:
         index = np.append(index, [row[0].value])
@@ -139,4 +139,4 @@ def getDataFromExcel():
     # ロードしたExcelファイルを閉じる
     wb.close()
 
-    return light1, light2
+    return light1, light2, light3, light4

@@ -1,7 +1,7 @@
 # include <math.h>
 
-float polyfit_params[4][2][2];
-int sensor_borders[4];
+float calcu_polyfit_params[4][2][2];
+int calcu_sensor_borders[4];
 
 void calcuLikelyPos(float sensorPos, int data, float *res);
 void calcuLikelyPosFor4(float sensorPos, int data, float *res);
@@ -9,22 +9,27 @@ void calcuLikelyPosFor4(float sensorPos, int data, float *res);
 // 近似式の係数をセットする
 void setParams(float *params_11, float *params_12, float *params_21, float *params_22, float *params_31, float *params_32, float *params_41, float *params_42) {
   for(int i = 0; i < 2; i++ ){
-    polyfit_params[0][0][i] = params_11[i];
-    polyfit_params[0][1][i] = params_12[i];
-    polyfit_params[1][0][i] = params_21[i];
-    polyfit_params[1][1][i] = params_22[i];
-    polyfit_params[2][0][i] = params_31[i];
-    polyfit_params[2][1][i] = params_32[i];
-    polyfit_params[3][0][i] = params_41[i];
-    polyfit_params[3][1][i] = params_42[i];
+    calcu_polyfit_params[0][0][i] = params_11[i];
+    calcu_polyfit_params[0][1][i] = params_12[i];
+    calcu_polyfit_params[1][0][i] = params_21[i];
+    calcu_polyfit_params[1][1][i] = params_22[i];
+    calcu_polyfit_params[2][0][i] = params_31[i];
+    calcu_polyfit_params[2][1][i] = params_32[i];
+    calcu_polyfit_params[3][0][i] = params_41[i];
+    calcu_polyfit_params[3][1][i] = params_42[i];
   }
+  // Serial.print(",setParams:");
+  // Serial.print(runMode);
+
 }
 
 // 各センサーが反応しているかどうかの境界を設定
 void setBorders(int *borders) {
   for(int i = 0; i < 4; i++ ){
-    sensor_borders[i] = borders[i];
+    calcu_sensor_borders[i] = borders[i];
   }
+  // Serial.print(",setBorders:");
+  // Serial.print(runMode);
 }
 
 // 二つのセンサーから現在位置を割り出す
@@ -68,6 +73,8 @@ float calcuPosBy2(int rightData, int leftData, float *res) {
     case 3:
       position = (likelyPos[0][1] + likelyPos[1][1])/2.0;
       break;
+    default:
+      position = 0;
   }
 
   return position;
@@ -96,7 +103,7 @@ float calcuPosBy4(int *sensorDatas) {
   int active_sensor_num = 0;
   int active_sensors[4] = {0, 0, 0, 0};
   for (int i = 0; i < 4; i++){
-    if (sensorDatas[i] > sensor_borders[i]) {
+    if (sensorDatas[i] > calcu_sensor_borders[i]) {
       active_sensors[active_sensor_num] = i;
       active_sensor_num++;
     }
@@ -110,13 +117,13 @@ float calcuPosBy4(int *sensorDatas) {
   // TODO: 外側のセンサのみ反応したときの返り値を適当な値にする
   // 1つしか反応していない→中央のセンサならセンサ位置、外側のセンサなら±1.2を返す
   case 1:
-    if (sensorDatas[0] > sensor_borders[0]) {
+    if (sensorDatas[0] > calcu_sensor_borders[0]) {
       return -1.2;
-    } else if (sensorDatas[1] > sensor_borders[1]) {
+    } else if (sensorDatas[1] > calcu_sensor_borders[1]) {
       return -1/3.0;
-    } else if (sensorDatas[2] > sensor_borders[2]) {
+    } else if (sensorDatas[2] > calcu_sensor_borders[2]) {
       return 1/3.0;
-    } else if (sensorDatas[3] > sensor_borders[3]) {
+    } else if (sensorDatas[3] > calcu_sensor_borders[3]) {
       return 1.2;
     }
     break;
@@ -135,8 +142,8 @@ float calcuPosBy4(int *sensorDatas) {
     float sensorPos[4] = {-1.0, -1/3.0, 1/3.0, 1.0}; // 各センサー位置
     float likelyPoses[2][2]; // 位置候補
     for (int i = 0; i < 2; i++){
-      likelyPoses[i][0] = calcuLikelyPosFor4(sensorPos[active_sensors[i]], sensorDatas[active_sensors[i]], polyfit_params[active_sensors[i]][0][0], polyfit_params[active_sensors[i]][0][1]);
-      likelyPoses[i][1] = calcuLikelyPosFor4(sensorPos[active_sensors[i]], sensorDatas[active_sensors[i]], polyfit_params[active_sensors[i]][1][0], polyfit_params[active_sensors[i]][1][1]);
+      likelyPoses[i][0] = calcuLikelyPosFor4(sensorPos[active_sensors[i]], sensorDatas[active_sensors[i]], calcu_polyfit_params[active_sensors[i]][0][0], calcu_polyfit_params[active_sensors[i]][0][1]);
+      likelyPoses[i][1] = calcuLikelyPosFor4(sensorPos[active_sensors[i]], sensorDatas[active_sensors[i]], calcu_polyfit_params[active_sensors[i]][1][0], calcu_polyfit_params[active_sensors[i]][1][1]);
     }
     // 位置候補同士の差を計算
     float distances[4];
@@ -167,6 +174,8 @@ float calcuPosBy4(int *sensorDatas) {
       case 3:
         position = (likelyPoses[0][1] + likelyPoses[1][1])/2.0;
         break;
+      default:
+        position = 0;
     }
     return position;
     break;
@@ -181,34 +190,34 @@ float calcuLikelyPosFor4(float sensorPos, int data, float params_0, float params
 // 4つのセンサーから現在位置を割り出す。主なセンサー1つと周りのセンサーの比から算出する簡単バージョン
 // light1が一番右のセンサー
 // sensor_ranges: センサーの閾値
-float calcuPosBy4Simple(int light1, int light2, int light3, int light4, int *sensor_ranges) {
-  // 線を認識していない場合は404を返す
-  if (light1 > (sensor_ranges[0][1]-(sensor_ranges[0][1]-sensor_ranges[0][0])/10.0)
-      && light2 > (sensor_ranges[1][1]-(sensor_ranges[1][1]-sensor_ranges[1][0])/10.0)
-      && light3 > (sensor_ranges[2][1]-(sensor_ranges[2][1]-sensor_ranges[2][0])/10.0)
-      && light4 > (sensor_ranges[3][1]-(sensor_ranges[3][1]-sensor_ranges[3][0])/10.0)) {
-        return 404
-  }
-  // 4つのセンサーの中で一番値が小さいものを求める
-  if (light1 < light2 && light1 < light3 && light1 < light4) {
-    // light1が一番小さい
-    return -1
-  } else if (light2 < light3 && light2 < light4) {
-    // light2が一番小さい
-    if (light1 < light3) {
-      return -0.5
-    } else {
-      return -0.167
-    }
-  } else if (light3 < light4) {
-    // light3が一番小さい
-    if (light2 < light4) {
-      return 0.167
-    } else {
-      return 0.5
-    }
-  } else {
-    // light4が一番小さい
-    return 1
-  }
-}
+// float calcuPosBy4Simple(int light1, int light2, int light3, int light4, int *sensor_ranges) {
+//   // 線を認識していない場合は404を返す
+//   if (light1 > (sensor_ranges[0][1]-(sensor_ranges[0][1]-sensor_ranges[0][0])/10.0)
+//       && light2 > (sensor_ranges[1][1]-(sensor_ranges[1][1]-sensor_ranges[1][0])/10.0)
+//       && light3 > (sensor_ranges[2][1]-(sensor_ranges[2][1]-sensor_ranges[2][0])/10.0)
+//       && light4 > (sensor_ranges[3][1]-(sensor_ranges[3][1]-sensor_ranges[3][0])/10.0)) {
+//         return 404
+//   }
+//   // 4つのセンサーの中で一番値が小さいものを求める
+//   if (light1 < light2 && light1 < light3 && light1 < light4) {
+//     // light1が一番小さい
+//     return -1
+//   } else if (light2 < light3 && light2 < light4) {
+//     // light2が一番小さい
+//     if (light1 < light3) {
+//       return -0.5
+//     } else {
+//       return -0.167
+//     }
+//   } else if (light3 < light4) {
+//     // light3が一番小さい
+//     if (light2 < light4) {
+//       return 0.167
+//     } else {
+//       return 0.5
+//     }
+//   } else {
+//     // light4が一番小さい
+//     return 1
+//   }
+// }

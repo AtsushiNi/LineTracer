@@ -1,7 +1,7 @@
 import numpy as np
 import analyseModule
 
-input_value = '430,450,500,520'
+input_value = '190,250,240,190'
 
 params11, params12, params21, params22, params31, params32, params41, params42 = analyseModule.analyseData(input_value.split(','))
 
