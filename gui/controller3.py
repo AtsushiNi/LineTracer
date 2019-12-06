@@ -308,6 +308,8 @@ class SerialClient():
             receives = re.split(',', line)
             for receive in receives:
                 x = re.split(':', receive)
+                print(x[0])
+                print(x[1])
                 if x[0] == 'light1':
                     global light1
                     light1 = np.append(light1, int(x[1]))
@@ -326,9 +328,6 @@ class SerialClient():
                 elif x[0] == 'time':
                     global time
                     time = np.append(time, int(x[1]))
-                else:
-                    print(x[0])
-                    print(x[1])
 
             # 送信
             if len(commands) > 0:
