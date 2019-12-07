@@ -222,6 +222,7 @@ class GraphView(BoxLayout):
         self.ax[0].tick_params(axis='y', colors="0.8")
         self.ax[0].set_facecolor((0.4, 0.4, 0.4, 1))
         self.ax[0].grid(axis='y')
+        self.ax[0].set_ylim([0, 500])
         self.ax[1].tick_params(axis='x', colors="0.8")
         self.ax[1].tick_params(axis='y', colors="0.8")
         self.ax[1].set_facecolor((0.4, 0.4, 0.4, 1))
@@ -300,16 +301,19 @@ class SerialClient():
     # シリアル通信用スレッドの実装部
     def serial_method(self):
         global commands
+        print_flag = 0
         ser = serial.Serial("COM5",9600) # シリアル通信
 
         while True:
             line = ser.readline()
             line = line.decode().rstrip('\r\n')
+            print_flag += 1
+            if print_flag > 50:
+                print(line)
+                print_flag = 0
             receives = re.split(',', line)
             for receive in receives:
                 x = re.split(':', receive)
-                print(x[0])
-                print(x[1])
                 if x[0] == 'light1':
                     global light1
                     light1 = np.append(light1, int(x[1]))
