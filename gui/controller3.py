@@ -21,6 +21,7 @@ import analyseModule
 # 定数
 FRAME_TIME = 10 # 更新間隔(ms)
 FRAME_NUM = 200 # 画面に表示するデータ数
+LOG_FILE_NAME = 'logs/sampleLogBy4Sensors.xlsx'
 
 commands = [] # 送信待ちコマンド
 input_value = '' # 入力中のコマンド
@@ -46,7 +47,7 @@ class MainScreen3(BoxLayout):
         global input_value
         if ',' in input_value:
             # センサーデータの解析
-            params11, params12, params21, params22, params31, params32, params41, params42 = analyseModule.analyseData(input_value.split(','))
+            params11, params12, params21, params22, params31, params32, params41, params42 = analyseModule.analyseData(input_value.split(','), LOG_FILE_NAME)
             # 右のセンサの前半から順に近似式の係数を送信していく。低い次数から順。指数表記になるような小さすぎる高次の係数は無視
             # commands.append("m")
             # for n in params11[::-1]:

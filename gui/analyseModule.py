@@ -4,9 +4,9 @@ import openpyxl
 # 線形近似の次数
 polyfit_index_num = 1
 
-def analyseData(borders):
+def analyseData(borders, fileName):
     # センサー値配列の取得
-    light1, light2, light3, light4 = getDataFromExcel()
+    light1, light2, light3, light4 = getDataFromExcel(fileName)
 
     # max,minの算出
     max = [light1.max(), light2.max(), light3.max(), light4.max()]
@@ -114,8 +114,8 @@ def analyseData(borders):
 
     return params11, params12, params21, params22, params31, params32, params41, params42
 
-def getDataFromExcel():
-    wb = openpyxl.load_workbook('logs/sampleLogBy4Sensors.xlsx')
+def getDataFromExcel(fileName):
+    wb = openpyxl.load_workbook(fileName)
     sheet = wb['Sheet1']
 
     # 先頭のデータ取得
