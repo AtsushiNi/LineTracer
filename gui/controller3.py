@@ -21,7 +21,8 @@ import analyseModule
 # 定数
 FRAME_TIME = 10 # 更新間隔(ms)
 FRAME_NUM = 200 # 画面に表示するデータ数
-LOG_FILE_NAME = 'logs/sampleLogBy4Sensors.xlsx'
+ANALYSE_LOG_FILE_NAME = 'logs/sampleLogBy4Sensors.xlsx' # 制御パラメータ算出に使用するログファイル
+SAVE_LOG_FILE_NAME = 'logs/log.xlsx' # ログを記録するファイル名
 
 commands = [] # 送信待ちコマンド
 input_value = '' # 入力中のコマンド
@@ -47,7 +48,7 @@ class MainScreen3(BoxLayout):
         global input_value
         if ',' in input_value:
             # センサーデータの解析
-            params11, params12, params21, params22, params31, params32, params41, params42 = analyseModule.analyseData(input_value.split(','), LOG_FILE_NAME)
+            params11, params12, params21, params22, params31, params32, params41, params42 = analyseModule.analyseData(input_value.split(','), ANALYSE_LOG_FILE_NAME)
             # 右のセンサの前半から順に近似式の係数を送信していく。低い次数から順。指数表記になるような小さすぎる高次の係数は無視
             # commands.append("m")
             # for n in params11[::-1]:
@@ -166,7 +167,7 @@ class MainScreen3(BoxLayout):
             time = np.delete(time, 0)
 
         # Excelにログ保存
-        wb = openpyxl.load_workbook('logs/log.xlsx')
+        wb = openpyxl.load_workbook(SAVE_LOG_FILE_NAME)
         sheet = wb['Sheet1']
         for t in range(np.size(time)):
             sheet.cell(row=t+1,column=1,value=t+1)
@@ -175,7 +176,7 @@ class MainScreen3(BoxLayout):
             sheet.cell(row=t+1,column=4,value=light2[t])
             sheet.cell(row=t+1,column=5,value=light3[t])
             sheet.cell(row=t+1,column=6,value=light4[t])
-        wb.save("logs/log.xlsx")
+        wb.save(SAVE_LOG_FILE_NAME)
 
         # データ初期化
         light1 =light2 = light3 = light4 = pos = time = np.zeros(FRAME_NUM)

@@ -43,14 +43,12 @@ float calcuPosBy4(int *sensorDatas) {
     }
   }
 
-  switch(active_sensor_num){
-  // 1つも認識しているセンサーがなければ404を返す
-  case 0:
+  if (active_sensor_num == 0) {
+    // 1つも認識しているセンサーがなければ404を返す
     return 404;
-    break;
-  // TODO: 外側のセンサのみ反応したときの返り値を適当な値にする
-  // 1つしか反応していない→中央のセンサならセンサ位置、外側のセンサなら±1.2を返す
-  case 1:
+  } else if (active_sensor_num == 1) {
+    // TODO: 外側のセンサのみ反応したときの返り値を適当な値にする
+    // 1つしか反応していない→中央のセンサならセンサ位置、外側のセンサなら±1.2を返す
     if (sensorDatas[0] > calcu_sensor_borders[0]) {
       return -1.2;
     } else if (sensorDatas[1] > calcu_sensor_borders[1]) {
@@ -60,8 +58,7 @@ float calcuPosBy4(int *sensorDatas) {
     } else if (sensorDatas[3] > calcu_sensor_borders[3]) {
       return 1.2;
     }
-    break;
-  case 3:
+  } else if (active_sensor_num == 3) {
     // TODO: センサー三つが同時に反応しないようなら、ここは404を返すようにする
     // TODO: とりあえず値の小さい二つのセンサーで処理するようにするが、三つとも使った方がいいのかも
     if (sensorDatas[active_sensors[0]] > sensorDatas[active_sensors[1]] && sensorDatas[active_sensors[0]] > sensorDatas[active_sensors[2]]) {
@@ -70,8 +67,11 @@ float calcuPosBy4(int *sensorDatas) {
     if (sensorDatas[active_sensors[1]] > active_sensors[2]) {
       active_sensors[1] = active_sensors[2];
     }
+  } else if (active_sensor_num == 4) {
+    return 404;
+  }
 
-  case 2:
+  if (active_sensor_num == 2 || active_sensor_num == 3) {
     // 2つ以上が反応していれば候補を２つずつ出して比較
     float sensorPos[4] = {-1.0, -1/3.0, 1/3.0, 1.0}; // 各センサー位置
     float likelyPoses[2][2]; // 位置候補
@@ -112,13 +112,6 @@ float calcuPosBy4(int *sensorDatas) {
         position = 0;
     }
     return position;
-    break;
-  case 4:
-    return 404;
-    break;
-  default:
-    return 0;
-    break;
   }
 }
 
