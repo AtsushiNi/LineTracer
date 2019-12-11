@@ -71,69 +71,29 @@ class MainScreen3(BoxLayout):
             # print(commands)
 
             # 係数の送信
-            commands.append("A")
-            commands.append(str(params11[-1]))
-            commands.append("a")
-            commands.append("B")
-            commands.append(str(params11[-2]))
-            commands.append("a")
-            commands.append("C")
-            commands.append(str(params12[-1]))
-            commands.append("a")
-            commands.append("D")
-            commands.append(str(params12[-2]))
-            commands.append("a")
-            commands.append("E")
-            commands.append(str(params21[-1]))
-            commands.append("a")
-            commands.append("F")
-            commands.append(str(params21[-2]))
-            commands.append("a")
-            commands.append("G")
-            commands.append(str(params22[-1]))
-            commands.append("a")
-            commands.append("H")
-            commands.append(str(params22[-2]))
-            commands.append("a")
-            commands.append("I")
-            commands.append(str(params31[-1]))
-            commands.append("a")
-            commands.append("J")
-            commands.append(str(params31[-2]))
-            commands.append("a")
-            commands.append("K")
-            commands.append(str(params32[-1]))
-            commands.append("a")
-            commands.append("L")
-            commands.append(str(params32[-2]))
-            commands.append("a")
-            commands.append("M")
-            commands.append(str(params41[-1]))
-            commands.append("a")
-            commands.append("N")
-            commands.append(str(params41[-2]))
-            commands.append("a")
-            commands.append("O")
-            commands.append(str(params42[-1]))
-            commands.append("a")
-            commands.append("P")
-            commands.append(str(params42[-2]))
-            commands.append("a")
+            commands.append("A" + str(params11[-1]) + "a")
+            commands.append("B" + str(params11[-2]) + "a")
+            commands.append("C" + str(params12[-1]) + "a")
+            commands.append("D" + str(params12[-2]) + "a")
+            commands.append("E" + str(params21[-1]) + "a")
+            commands.append("F" + str(params21[-2]) + "a")
+            commands.append("G" + str(params22[-1]) + "a")
+            commands.append("H" + str(params22[-2]) + "a")
+            commands.append("I" + str(params31[-1]) + "a")
+            commands.append("J" + str(params31[-2]) + "a")
+            commands.append("K" + str(params32[-1]) + "a")
+            commands.append("L" + str(params32[-2]) + "a")
+            commands.append("M" + str(params41[-1]) + "a")
+            commands.append("N" + str(params41[-2]) + "a")
+            commands.append("O" + str(params42[-1]) + "a")
+            commands.append("P" + str(params42[-2]) + "a")
 
             # センサの閾値の送信
             sensor_borders = input_value.split(',')
-            commands.append("W")
-            commands.append(str(int(sensor_borders[0])))
-            commands.append("a")
-            commands.append("X")
-            commands.append(str(int(sensor_borders[1])))
-            commands.append("a")
-            commands.append("Y")
-            commands.append(str(int(sensor_borders[2])))
-            commands.append("a")
-            commands.append("Z")
-            commands.append(str(int(sensor_borders[3])))
-            commands.append("a")
+            commands.append("W" + str(int(sensor_borders[0])) + "a")
+            commands.append("X" + str(int(sensor_borders[1])) + "a")
+            commands.append("Y" + str(int(sensor_borders[2])) + "a")
+            commands.append("Z" + str(int(sensor_borders[3])) + "a")
         else:
             commands.append(input_value)
             print(input_value)
@@ -308,32 +268,41 @@ class SerialClient():
 
         while True:
             line = ser.readline()
-            line = line.decode().rstrip('\r\n')
-            print_flag += 1
-            if print_flag > 50:
+            try:
+                line = line.decode().rstrip('\r\n')
+                print_flag += 1
+                if print_flag > 50:
+                    print(line)
+                    print_flag = 0
+                receives = re.split(',', line)
+                for receive in receives:
+                    x = re.split(':', receive)
+                    if x[0] == 'light1':
+                        global light1
+                        light1 = np.append(light1, int(x[1]))
+                    elif x[0] == 'light2':
+                        global light2
+                        light2 = np.append(light2, int(x[1]))
+                    elif x[0] == 'light3':
+                        global light3
+                        light3 = np.append(light3, int(x[1]))
+                    elif x[0] == 'light4':
+                        global light4
+                        light4 = np.append(light4, int(x[1]))
+                    elif x[0] == 'pos':
+                        global pos
+                        pos = np.append(pos, float(x[1]))
+                    elif x[0] == 'time':
+                        global time
+                        time = np.append(time, int(x[1]))
+                    elif x[0] == '':
+                        do_nothing = 0
+                    else:
+                        print(x[0])
+                        print(x[1])
+            except UnicodeDecodeError:
+                print('ERROR!!!')
                 print(line)
-                print_flag = 0
-            receives = re.split(',', line)
-            for receive in receives:
-                x = re.split(':', receive)
-                if x[0] == 'light1':
-                    global light1
-                    light1 = np.append(light1, int(x[1]))
-                elif x[0] == 'light2':
-                    global light2
-                    light2 = np.append(light2, int(x[1]))
-                elif x[0] == 'light3':
-                    global light3
-                    light3 = np.append(light3, int(x[1]))
-                elif x[0] == 'light4':
-                    global light4
-                    light4 = np.append(light4, int(x[1]))
-                elif x[0] == 'pos':
-                    global pos
-                    pos = np.append(pos, float(x[1]))
-                elif x[0] == 'time':
-                    global time
-                    time = np.append(time, int(x[1]))
 
             # 送信
             if len(commands) > 0:

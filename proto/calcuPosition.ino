@@ -37,7 +37,7 @@ float calcuPosBy4(int *sensorDatas) {
   int active_sensor_num = 0;
   int active_sensors[4] = {0, 0, 0, 0};
   for (int i = 0; i < 4; i++){
-    if (sensorDatas[i] > calcu_sensor_borders[i]) {
+    if (sensorDatas[i] < calcu_sensor_borders[i]) {
       active_sensors[active_sensor_num] = i;
       active_sensor_num++;
     }
