@@ -1,7 +1,29 @@
 # include <math.h>
 
-float calcu_polyfit_params[4][2][2];
-int calcu_sensor_borders[4];
+float calcu_polyfit_params[4][2][2] = {
+  {
+    {0.255756532, -0.003234247},
+    {-0.26329114, 0.0033770307}
+  },
+  {
+    {0.189936256, -0.0023355},
+    {-0.20201530, 0.00210843}
+  },
+  {
+    {0.195091001, -0.00226165},
+    {-0.28384191, 0.003158531}
+  },
+  {
+    {0.12523096, -0.002790527},
+    {-0.1336090, 0.0025153852}
+  }
+};
+int calcu_sensor_borders[4] = {
+  170,
+  230,
+  220,
+  165
+};
 
 void calcuLikelyPos(float sensorPos, int data, float *res);
 void calcuLikelyPosFor4(float sensorPos, int data, float *res);
@@ -42,6 +64,17 @@ float calcuPosBy4(int *sensorDatas) {
       active_sensor_num++;
     }
   }
+  Serial.print("case:");
+  Serial.print(active_sensor_num);
+  Serial.print(",light1:");
+  Serial.print(calcu_sensor_borders[0] - sensorDatas[0]);
+  Serial.print(",light2:");
+  Serial.print(calcu_sensor_borders[1] - sensorDatas[1]);
+  Serial.print(",light3:");
+  Serial.print(calcu_sensor_borders[2] - sensorDatas[2]);
+  Serial.print(",light4:");
+  Serial.print(calcu_sensor_borders[3] - sensorDatas[3]);
+  Serial.print(",");
 
   if (active_sensor_num == 0) {
     // 1つも認識しているセンサーがなければ404を返す

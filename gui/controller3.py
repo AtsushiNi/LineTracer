@@ -23,6 +23,7 @@ FRAME_TIME = 10 # 更新間隔(ms)
 FRAME_NUM = 200 # 画面に表示するデータ数
 ANALYSE_LOG_FILE_NAME = 'logs/sampleLogBy4Sensors.xlsx' # 制御パラメータ算出に使用するログファイル
 SAVE_LOG_FILE_NAME = 'logs/log.xlsx' # ログを記録するファイル名
+PORT = 'COM3' # Bluetooth: 'COM3'or'COM4', USB: 'COM5'
 
 commands = [] # 送信待ちコマンド
 input_value = '' # 入力中のコマンド
@@ -37,6 +38,10 @@ light3 = np.zeros(FRAME_NUM)
 light4 = np.zeros(FRAME_NUM)
 pos = np.zeros(FRAME_NUM)
 time = np.zeros(FRAME_NUM)
+case = np.zeros(FRAME_NUM)
+u = np.zeros(FRAME_NUM)
+rpow = np.zeros(FRAME_NUM)
+lpow = np.zeros(FRAME_NUM)
 
 class MainScreen3(BoxLayout):
     def handle_change(self, value):
@@ -184,18 +189,21 @@ class GraphView(BoxLayout):
         self.ax[0].tick_params(axis='y', colors="0.8")
         self.ax[0].set_facecolor((0.4, 0.4, 0.4, 1))
         self.ax[0].grid(axis='y')
-        self.ax[0].set_ylim([0, 500])
+        self.ax[0].set_ylim([-100, 160])
         self.ax[1].tick_params(axis='x', colors="0.8")
         self.ax[1].tick_params(axis='y', colors="0.8")
         self.ax[1].set_facecolor((0.4, 0.4, 0.4, 1))
+        self.ax[1].set_ylim([-1, 4.2])
 
         # 最初に描画したときの Line も保存しておく
-        self.line11, = self.ax[0].plot(x, y, label="light1")
-        self.line12, = self.ax[0].plot(x, y, label="light2")
-        self.line13, = self.ax[0].plot(x, y, label="light3")
-        self.line14, = self.ax[0].plot(x, y, label="light4")
+        self.line11, = self.ax[0].plot(x, y, label="sensor1")
+        self.line12, = self.ax[0].plot(x, y, label="sensor2")
+        self.line13, = self.ax[0].plot(x, y, label="sensor3")
+        self.line14, = self.ax[0].plot(x, y, label="sensor4")
 
-        self.line21, = self.ax[1].plot(x, y)
+        self.line21, = self.ax[1].plot(x, y, label="pos")
+        self.line22, = self.ax[1].plot(x, y, label="case")
+        self.line23, = self.ax[1].plot(x, y, label="u")
 
         # ウィジェットとしてグラフを追加する
         widget = FigureCanvasKivyAgg(self.fig)
@@ -212,6 +220,10 @@ class GraphView(BoxLayout):
         global light4
         global pos
         global is_graph_updating
+        global case
+        global rpow
+        global lpow
+        global u
 
         # is_graph_updating == Falseならグラフ更新しない
         if not is_graph_updating:
@@ -225,6 +237,8 @@ class GraphView(BoxLayout):
         y14 = light4[-FRAME_NUM:]
 
         y21 = pos[-FRAME_NUM:]
+        y22 = case[-FRAME_NUM:]
+        y23 = u[-FRAME_NUM:]
 
         # Line にデータを設定する
         self.line11.set_data(x, y11)
@@ -232,12 +246,15 @@ class GraphView(BoxLayout):
         self.line13.set_data(x, y13)
         self.line14.set_data(x, y14)
         self.line21.set_data(x, y21)
+        self.line22.set_data(x, y22)
+        self.line23.set_data(x, y23)
         # グラフの見栄えを調整する
         self.ax[0].relim()
         self.ax[0].autoscale_view()
         self.ax[0].legend(loc='upper left')
         self.ax[1].relim()
         self.ax[1].autoscale_view()
+        self.ax[1].legend(loc='upper left')
         # 再描画する
         self.fig.canvas.draw()
         self.fig.canvas.flush_events()
@@ -264,16 +281,16 @@ class SerialClient():
     def serial_method(self):
         global commands
         print_flag = 0
-        ser = serial.Serial("COM5",9600) # シリアル通信
+        ser = serial.Serial(PORT,9600) # シリアル通信
 
         while True:
             line = ser.readline()
             try:
                 line = line.decode().rstrip('\r\n')
-                print_flag += 1
-                if print_flag > 50:
-                    print(line)
-                    print_flag = 0
+                # print_flag += 1
+                # if print_flag > 50:
+                #     print(line)
+                #     print_flag = 0
                 receives = re.split(',', line)
                 for receive in receives:
                     x = re.split(':', receive)
@@ -297,9 +314,22 @@ class SerialClient():
                         time = np.append(time, int(x[1]))
                     elif x[0] == '':
                         do_nothing = 0
-                    else:
-                        print(x[0])
-                        print(x[1])
+                    elif x[0] == 'case':
+                        global case
+                        case = np.append(case, int(x[1]))
+                    elif x[0] == 'u':
+                        global u
+                        u = np.append(u, float(x[1]))
+                    elif x[0] == 'rpow':
+                        global rpow
+                        rpow = np.append(rpow, float(x[1]))
+                    elif x[0] == 'lpow':
+                        global lpow
+                        lpow = np.append(lpow, float(x[1]))
+
+                    # else:
+                    #     print(x[0])
+                    #     print(x[1])
             except UnicodeDecodeError:
                 print('ERROR!!!')
                 print(line)

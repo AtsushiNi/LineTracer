@@ -1,6 +1,6 @@
   // Pin
-int rightMoterPin = 11;
-int leftMoterPin = 3;
+int rightMoterPin = 3;
+int leftMoterPin = 11;
 int sensorPin1 = A0;
 int sensorPin2 = A1;
 int sensorPin3 = A2;
@@ -15,12 +15,12 @@ int inputPointer = 0; // 値入力中に使うポインタ用
 int basicStatus = 0; // 基本ステータス。0:待機, 1:走行
 int runMode = 0; // 走行モード　0:ライントレース, 1:ラジコン, 2:テスト
 int radioControllDirection = 0; // ラジコンモードの進路方向　0:直進, 1:右, 2: 左
-int basicSpeed = 100; // 走行スピード. アナログ出力の最大は255
+int basicSpeed = 50; // 走行スピード. アナログ出力の最大は255
 float reduceRacio = 0.2; // ラジコンモードでの左右減速比
 int outputMoterPower = 0; // モーター出力値を出力するかどうか 0:しない, 1:する
 int outputLightSensor = 1; // 光センサーの値を出力するかどうか 0:しない, 1:する
 int outputMode = 2; // 表示出力の様式　0:ArduinoIDE, 1:Android, 2:Python
-float kp = 0; // 比例制御のパラメータ
+float kp = 1; // 比例制御のパラメータ
 float ki = 0; // 積分制御のパラメータ
 float kd = 0; // 微分制御のパラメータ
 // センサ値解析用近似式の係数。右センサー前半から、低次項から順
@@ -177,13 +177,18 @@ void loop() {
   if (runMode == 0) {
     // 線を見失ったときは、直近のデータを元に旋回
     if (pos == 404) {
-      if (direction_his == 1) {
-        rightPower = basicSpeed;
-        leftPower = 0;
-      } else {
-        rightPower = 0;
-        leftPower = basicSpeed;
-      }
+//      if (direction_his == 1) {
+//        rightPower = basicSpeed;
+//        leftPower = 0;
+//      } else {
+//        rightPower = 0;
+//        leftPower = basicSpeed;
+//      }
+      rightPower = basicSpeed;
+      leftPower = basicSpeed;
+      Serial.print("u:");
+      Serial.print(10);
+      Serial.print(",");
     } else {
     // PID制御
       // direction_hisを更新
@@ -200,8 +205,17 @@ void loop() {
       pos_1 = pos;
       u = u + du;
       // 制御量からモーター出力量
-      rightPower = basicSpeed + u;
-      leftPower = basicSpeed - u;
+      if (u > 0) {
+        leftPower = basicSpeed * (1 - u);
+        rightPower = basicSpeed;
+      } else {
+        rightPower = basicSpeed * (1 + u);
+        leftPower = basicSpeed;
+      }
+
+      Serial.print("u:");
+      Serial.print(u);
+      Serial.print(",");
     }
   } else if (runMode == 1) {
     rightPower = (float)basicSpeed;
@@ -248,16 +262,12 @@ void loop() {
     case 2:
       Serial.print("time:");
       Serial.print(millis());
-      Serial.print(",light1:");
-      Serial.print(sensorDatas[0]);
-      Serial.print(",light2:");
-      Serial.print(sensorDatas[1]);
-      Serial.print(",light3:");
-      Serial.print(sensorDatas[2]);
-      Serial.print(",light4:");
-      Serial.print(sensorDatas[3]);
       Serial.print(",pos:");
-      Serial.println(pos);
+      Serial.print(pos);
+      Serial.print(",rpow:");
+      Serial.print(rightPower);
+      Serial.print(",lpow:");
+      Serial.println(leftPower);
       break;
   }
 }
