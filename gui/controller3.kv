@@ -129,7 +129,7 @@ MainScreen3:
                         min: 0
                         max: 100
                         size_hint_x: 8
-                        on_touch_up: root.handle_kp_change(self.value)
+                        on_touch_up: root.handle_kp_change(self.value, args)
                     Label:
                         text: '{:.0f}'.format(kp.value)
                         size_hint_x: 1
@@ -143,7 +143,7 @@ MainScreen3:
                         min: 0
                         max: 100
                         size_hint_x: 8
-                        on_touch_up: root.handle_ki_change(self.value)
+                        on_touch_up: root.handle_ki_change(self.value, args)
                     Label:
                         text: '{:.0f}'.format(ki.value)
                         size_hint_x: 1
@@ -157,7 +157,7 @@ MainScreen3:
                         min: 0
                         max: 100
                         size_hint_x: 8
-                        on_touch_up: root.handle_kd_change(self.value)
+                        on_touch_up: root.handle_kd_change(self.value, args)
                     Label:
                         text: '{:.0f}'.format(kd.value)
                         size_hint_x: 1
@@ -186,6 +186,8 @@ MainScreen3:
                 points: self.pos[0]+10,self.pos[1],self.pos[0]+50,self.pos[1],self.size[0]-10,self.pos[1]
                 width: 2
 
-    GraphView:
-        pos_hint: {"y": 1}
+    ScrollView:
+        GraphView:
+            pos_hint: {"y": 1}
+            size_hint_y: 2
 

@@ -157,20 +157,23 @@ class MainScreen3(BoxLayout):
         commands.append("c0a")
         print("runMode")
 
-    def handle_kp_change(self, value):
-        global commands
-        commands.append("j"+str(value)+"a")
-        print("KP: "+str(value))
+    def handle_kp_change(self, value, event):
+        if (not event[1].is_mouse_scrolling) and (event[1].grab_current is event[0]):
+            global commands
+            commands.append("j"+str(value)+"a")
+            print("KP: "+str(value))
 
-    def handle_ki_change(self, value):
-        global commands
-        commands.append("k"+str(value)+"a")
-        print("KI: "+str(value))
+    def handle_ki_change(self, value, event):
+        if (not event[1].is_mouse_scrolling) and (event[1].grab_current is event[0]):
+            global commands
+            commands.append("k"+str(value)+"a")
+            print("KI: "+str(value))
 
-    def handle_kd_change(self, value):
-        global commands
-        commands.append("l"+str(value)+"a")
-        print("KD: "+str(value))
+    def handle_kd_change(self, value, event):
+        if (not event[1].is_mouse_scrolling) and (event[1].grab_current is event[0]):
+            global commands
+            commands.append("l"+str(value)+"a")
+            print("KD: "+str(value))
 
 class GraphView(BoxLayout):
     def __init__(self, *args, **kwargs):
@@ -184,7 +187,7 @@ class GraphView(BoxLayout):
         y = np.zeros(FRAME_NUM)
 
         # Figure, Axis を保存しておく
-        self.fig, self.ax = plt.subplots(2, facecolor="0.1")
+        self.fig, self.ax = plt.subplots(3, facecolor="0.1")
         self.ax[0].tick_params(axis='x', colors="0.8")
         self.ax[0].tick_params(axis='y', colors="0.8")
         self.ax[0].set_facecolor((0.4, 0.4, 0.4, 1))
@@ -194,6 +197,10 @@ class GraphView(BoxLayout):
         self.ax[1].tick_params(axis='y', colors="0.8")
         self.ax[1].set_facecolor((0.4, 0.4, 0.4, 1))
         self.ax[1].set_ylim([-1, 4.2])
+        self.ax[2].tick_params(axis='x', colors="0.8")
+        self.ax[2].tick_params(axis='y', colors="0.8")
+        self.ax[2].set_facecolor((0.4, 0.4, 0.4, 1))
+        self.ax[2].set_ylim([-0.5, 200])
 
         # 最初に描画したときの Line も保存しておく
         self.line11, = self.ax[0].plot(x, y, label="sensor1")
@@ -201,10 +208,12 @@ class GraphView(BoxLayout):
         self.line13, = self.ax[0].plot(x, y, label="sensor3")
         self.line14, = self.ax[0].plot(x, y, label="sensor4")
 
-        self.line21, = self.ax[1].plot(x, y, label="pos")
-        self.line22, = self.ax[1].plot(x, y, label="case")
-        self.line23, = self.ax[1].plot(x, y, label="u")
+        self.line21, = self.ax[1].plot(x, y, label="position")
+        self.line22, = self.ax[1].plot(x, y, label="activeSensorsNum")
+        self.line23, = self.ax[1].plot(x, y, label="PIDresponse")
 
+        self.line31, = self.ax[2].plot(x, y, label="rightPower")
+        self.line32, = self.ax[2].plot(x, y, label="leftPower")
         # ウィジェットとしてグラフを追加する
         widget = FigureCanvasKivyAgg(self.fig)
         self.add_widget(widget)
@@ -240,6 +249,9 @@ class GraphView(BoxLayout):
         y22 = case[-FRAME_NUM:]
         y23 = u[-FRAME_NUM:]
 
+        y31 = rpow[-FRAME_NUM:]
+        y32 = lpow[-FRAME_NUM:]
+
         # Line にデータを設定する
         self.line11.set_data(x, y11)
         self.line12.set_data(x, y12)
@@ -248,6 +260,8 @@ class GraphView(BoxLayout):
         self.line21.set_data(x, y21)
         self.line22.set_data(x, y22)
         self.line23.set_data(x, y23)
+        self.line31.set_data(x, y31)
+        self.line32.set_data(x, y32)
         # グラフの見栄えを調整する
         self.ax[0].relim()
         self.ax[0].autoscale_view()
@@ -255,6 +269,9 @@ class GraphView(BoxLayout):
         self.ax[1].relim()
         self.ax[1].autoscale_view()
         self.ax[1].legend(loc='upper left')
+        self.ax[2].relim()
+        self.ax[2].autoscale_view()
+        self.ax[2].legend(loc='upper left')
         # 再描画する
         self.fig.canvas.draw()
         self.fig.canvas.flush_events()
