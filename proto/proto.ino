@@ -32,11 +32,19 @@ float polyfit_params_31[2];
 float polyfit_params_32[2];
 float polyfit_params_41[2];
 float polyfit_params_42[2];
-int sensor_borders[4]; // センサーの有効範囲(線を見失っているかどうかのボーダー値)。右センサーから。
+int sensor_borders[4] = {
+  170,
+  230,
+  220,
+  165
+}; // センサーの有効範囲(線を見失っているかどうかのボーダー値)。右センサーから。
 
 // PID制御の変数
 float pos_1 = 0; // 前回の位置
 float pos_2 = 0; // 前々回の位置
+
+float du; // 制御量の変化
+float u; // 制御量
 
 // 線を見失った時のための変数
 int direction_his = 1;
@@ -140,17 +148,20 @@ void loop() {
             break;
           case 'W':
             sensor_borders[0] = atoi(tmp);
+            setBorders(sensor_borders[0], sensor_borders[1], sensor_borders[2], sensor_borders[3]);
             break;
           case 'X':
             sensor_borders[1] = atoi(tmp);
+            setBorders(sensor_borders[0], sensor_borders[1], sensor_borders[2], sensor_borders[3]);
             break;
           case 'Y':
             sensor_borders[2] = atoi(tmp);
+            setBorders(sensor_borders[0], sensor_borders[1], sensor_borders[2], sensor_borders[3]);
             break;
           case 'Z':
             sensor_borders[3] = atoi(tmp);
             setParams(polyfit_params_11, polyfit_params_12, polyfit_params_21, polyfit_params_22, polyfit_params_31, polyfit_params_32, polyfit_params_41, polyfit_params_42);
-            setBorders(sensor_borders);
+            setBorders(sensor_borders[0], sensor_borders[1], sensor_borders[2], sensor_borders[3]);
             break;
         }
         inputPointer = 0;
@@ -198,8 +209,6 @@ void loop() {
         direction_his = -1;
       }
 
-      float du; // 制御量の変化
-      float u; // 制御量
       du = kp * (pos - pos_1) + ki * pos + kd * (pos - 2 * pos_1 + pos_2);
       pos_2 = pos_1;
       pos_1 = pos;

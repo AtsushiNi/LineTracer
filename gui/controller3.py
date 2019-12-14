@@ -24,6 +24,7 @@ FRAME_NUM = 200 # 画面に表示するデータ数
 ANALYSE_LOG_FILE_NAME = 'logs/sampleLogBy4Sensors.xlsx' # 制御パラメータ算出に使用するログファイル
 SAVE_LOG_FILE_NAME = 'logs/log.xlsx' # ログを記録するファイル名
 PORT = 'COM3' # Bluetooth: 'COM3'or'COM4', USB: 'COM5'
+sensor_borders = [170, 230, 220, 165] # センサーの閾値の初期値
 
 commands = [] # 送信待ちコマンド
 input_value = '' # 入力中のコマンド
@@ -51,6 +52,7 @@ class MainScreen3(BoxLayout):
     def handle_submit(self, value):
         global commands
         global input_value
+        global sensor_borders
         if ',' in input_value:
             # センサーデータの解析
             params11, params12, params21, params22, params31, params32, params41, params42 = analyseModule.analyseData(input_value.split(','), ANALYSE_LOG_FILE_NAME)
@@ -94,11 +96,32 @@ class MainScreen3(BoxLayout):
             commands.append("P" + str(params42[-2]) + "a")
 
             # センサの閾値の送信
-            sensor_borders = input_value.split(',')
-            commands.append("W" + str(int(sensor_borders[0])) + "a")
-            commands.append("X" + str(int(sensor_borders[1])) + "a")
-            commands.append("Y" + str(int(sensor_borders[2])) + "a")
-            commands.append("Z" + str(int(sensor_borders[3])) + "a")
+            borders = input_value.split(',')
+            sensor_borders[0] = borders[0]
+            sensor_borders[1] = borders[1]
+            sensor_borders[2] = borders[2]
+            sensor_borders[3] = borders[3]
+
+            commands.append("W" + str(int(borders[0])) + "a")
+            commands.append("X" + str(int(borders[1])) + "a")
+            commands.append("Y" + str(int(borders[2])) + "a")
+            commands.append("Z" + str(int(borders[3])) + "a")
+
+        # sensor_bordersの変更
+        elif input_value[0] is "W":
+            sensor_borders[0] = int(input_value[1:-1]) + sensor_borders[0]
+            commands.append("W" + str(sensor_borders[0]) + "a")
+        elif input_value[0] is "X":
+            sensor_borders[1] = int(input_value[1:-1]) + sensor_borders[1]
+            commands.append("X" + str(sensor_borders[1]) + "a")
+        elif input_value[0] is "Y":
+            sensor_borders[2] = int(input_value[1:-1]) + sensor_borders[2]
+            commands.append("Y" + str(sensor_borders[2]) + "a")
+        elif input_value[0] is "Z":
+            sensor_borders[3] = int(input_value[1:-1]) + sensor_borders[3]
+            commands.append("Z" + str(sensor_borders[3]) + "a")
+
+        # コマンドの送信
         else:
             commands.append(input_value)
             print(input_value)
@@ -132,16 +155,19 @@ class MainScreen3(BoxLayout):
             time = np.delete(time, 0)
 
         # Excelにログ保存
-        wb = openpyxl.load_workbook(SAVE_LOG_FILE_NAME)
-        sheet = wb['Sheet1']
-        for t in range(np.size(time)):
-            sheet.cell(row=t+1,column=1,value=t+1)
-            sheet.cell(row=t+1,column=2,value=time[t])
-            sheet.cell(row=t+1,column=3,value=light1[t])
-            sheet.cell(row=t+1,column=4,value=light2[t])
-            sheet.cell(row=t+1,column=5,value=light3[t])
-            sheet.cell(row=t+1,column=6,value=light4[t])
-        wb.save(SAVE_LOG_FILE_NAME)
+        try:
+            wb = openpyxl.load_workbook(SAVE_LOG_FILE_NAME)
+            sheet = wb['Sheet1']
+            for t in range(np.size(time)):
+                sheet.cell(row=t+1,column=1,value=t+1)
+                sheet.cell(row=t+1,column=2,value=time[t])
+                sheet.cell(row=t+1,column=3,value=light1[t])
+                sheet.cell(row=t+1,column=4,value=light2[t])
+                sheet.cell(row=t+1,column=5,value=light3[t])
+                sheet.cell(row=t+1,column=6,value=light4[t])
+            wb.save(SAVE_LOG_FILE_NAME)
+        except IndexError:
+            print("ログを保存できませんでした")
 
         # データ初期化
         light1 =light2 = light3 = light4 = pos = time = np.zeros(FRAME_NUM)
@@ -240,10 +266,10 @@ class GraphView(BoxLayout):
 
         # データを更新する
         x = np.linspace(1,FRAME_NUM,FRAME_NUM)
-        y11 = light1[-FRAME_NUM:]
-        y12 = light2[-FRAME_NUM:]
-        y13 = light3[-FRAME_NUM:]
-        y14 = light4[-FRAME_NUM:]
+        y11 = sensor_borders[0] - light1[-FRAME_NUM:]
+        y12 = sensor_borders[1] - light2[-FRAME_NUM:]
+        y13 = sensor_borders[2] - light3[-FRAME_NUM:]
+        y14 = sensor_borders[3] - light4[-FRAME_NUM:]
 
         y21 = pos[-FRAME_NUM:]
         y22 = case[-FRAME_NUM:]
@@ -279,6 +305,11 @@ class GraphView(BoxLayout):
 class Controller3App(App):
     def __init__(self, **kwargs):
         super(Controller3App, self).__init__(**kwargs)
+        global commands
+        commands.append("W" + str(sensor_borders[0]) + "a")
+        commands.append("X" + str(sensor_borders[1]) + "a")
+        commands.append("Y" + str(sensor_borders[2]) + "a")
+        commands.append("Z" + str(sensor_borders[3]) + "a")
 
     def build(self):
         serialClient = SerialClient()

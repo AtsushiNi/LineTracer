@@ -19,7 +19,7 @@ float calcu_polyfit_params[4][2][2] = {
   }
 };
 int calcu_sensor_borders[4] = {
-  170,
+    170,
   230,
   220,
   165
@@ -44,10 +44,11 @@ void setParams(float *params_11, float *params_12, float *params_21, float *para
 }
 
 // 各センサーが反応しているかどうかの境界を設定
-void setBorders(int *borders) {
-  for(int i = 0; i < 4; i++ ){
-    calcu_sensor_borders[i] = borders[i];
-  }
+void setBorders(int border1, int border2, int border3, int border4) {
+  calcu_sensor_borders[0] = border1;
+  calcu_sensor_borders[1] = border2;
+  calcu_sensor_borders[2] = border3;
+  calcu_sensor_borders[3] = border4;
 }
 
 // 4つのセンサーから現在位置を割り出す。
@@ -67,13 +68,13 @@ float calcuPosBy4(int *sensorDatas) {
   Serial.print("case:");
   Serial.print(active_sensor_num);
   Serial.print(",light1:");
-  Serial.print(calcu_sensor_borders[0] - sensorDatas[0]);
+  Serial.print(sensorDatas[0]);
   Serial.print(",light2:");
-  Serial.print(calcu_sensor_borders[1] - sensorDatas[1]);
+  Serial.print(sensorDatas[1]);
   Serial.print(",light3:");
-  Serial.print(calcu_sensor_borders[2] - sensorDatas[2]);
+  Serial.print(sensorDatas[2]);
   Serial.print(",light4:");
-  Serial.print(calcu_sensor_borders[3] - sensorDatas[3]);
+  Serial.print(sensorDatas[3]);
   Serial.print(",");
 
   if (active_sensor_num == 0) {
@@ -82,13 +83,13 @@ float calcuPosBy4(int *sensorDatas) {
   } else if (active_sensor_num == 1) {
     // TODO: 外側のセンサのみ反応したときの返り値を適当な値にする
     // 1つしか反応していない→中央のセンサならセンサ位置、外側のセンサなら±1.2を返す
-    if (sensorDatas[0] > calcu_sensor_borders[0]) {
+    if (sensorDatas[0] < calcu_sensor_borders[0]) {
       return -1.2;
-    } else if (sensorDatas[1] > calcu_sensor_borders[1]) {
+    } else if (sensorDatas[1] < calcu_sensor_borders[1]) {
       return -1/3.0;
-    } else if (sensorDatas[2] > calcu_sensor_borders[2]) {
+    } else if (sensorDatas[2] < calcu_sensor_borders[2]) {
       return 1/3.0;
-    } else if (sensorDatas[3] > calcu_sensor_borders[3]) {
+    } else if (sensorDatas[3] < calcu_sensor_borders[3]) {
       return 1.2;
     }
   } else if (active_sensor_num == 3) {
