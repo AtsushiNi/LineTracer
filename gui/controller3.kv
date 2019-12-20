@@ -127,7 +127,7 @@ MainScreen3:
                     Slider:
                         id: kp
                         min: 0
-                        max: 100
+                        max: 5
                         size_hint_x: 8
                         on_touch_up: root.handle_kp_change(self.value, args)
                     Label:
@@ -141,7 +141,7 @@ MainScreen3:
                     Slider:
                         id: ki
                         min: 0
-                        max: 100
+                        max: 2
                         size_hint_x: 8
                         on_touch_up: root.handle_ki_change(self.value, args)
                     Label:
@@ -155,7 +155,7 @@ MainScreen3:
                     Slider:
                         id: kd
                         min: 0
-                        max: 100
+                        max: 2
                         size_hint_x: 8
                         on_touch_up: root.handle_kd_change(self.value, args)
                     Label:

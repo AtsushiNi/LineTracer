@@ -24,7 +24,7 @@ FRAME_NUM = 200 # 画面に表示するデータ数
 ANALYSE_LOG_FILE_NAME = 'logs/sampleLogBy4Sensors.xlsx' # 制御パラメータ算出に使用するログファイル
 SAVE_LOG_FILE_NAME = 'logs/log.xlsx' # ログを記録するファイル名
 PORT = 'COM3' # Bluetooth: 'COM3'or'COM4', USB: 'COM5'
-sensor_borders = [170, 230, 220, 165] # センサーの閾値の初期値
+sensor_borders = [160, 220, 210, 155] # センサーの閾値の初期値
 
 commands = [] # 送信待ちコマンド
 input_value = '' # 入力中のコマンド

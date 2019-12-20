@@ -19,7 +19,7 @@ float calcu_polyfit_params[4][2][2] = {
   }
 };
 int calcu_sensor_borders[4] = {
-    170,
+  170,
   230,
   220,
   165

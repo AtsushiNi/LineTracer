@@ -1,4 +1,4 @@
-  // Pin
+// Pin
 int rightMoterPin = 3;
 int leftMoterPin = 11;
 int sensorPin1 = A0;
@@ -15,7 +15,7 @@ int inputPointer = 0; // 値入力中に使うポインタ用
 int basicStatus = 0; // 基本ステータス。0:待機, 1:走行
 int runMode = 0; // 走行モード　0:ライントレース, 1:ラジコン, 2:テスト
 int radioControllDirection = 0; // ラジコンモードの進路方向　0:直進, 1:右, 2: 左
-int basicSpeed = 50; // 走行スピード. アナログ出力の最大は255
+int basicSpeed = 80; // 走行スピード. アナログ出力の最大は255
 float reduceRacio = 0.2; // ラジコンモードでの左右減速比
 int outputMoterPower = 0; // モーター出力値を出力するかどうか 0:しない, 1:する
 int outputLightSensor = 1; // 光センサーの値を出力するかどうか 0:しない, 1:する
@@ -33,10 +33,10 @@ float polyfit_params_32[2];
 float polyfit_params_41[2];
 float polyfit_params_42[2];
 int sensor_borders[4] = {
-  170,
-  230,
+  160,
   220,
-  165
+  210,
+  155
 }; // センサーの有効範囲(線を見失っているかどうかのボーダー値)。右センサーから。
 
 // PID制御の変数
@@ -188,15 +188,15 @@ void loop() {
   if (runMode == 0) {
     // 線を見失ったときは、直近のデータを元に旋回
     if (pos == 404) {
-//      if (direction_his == 1) {
-//        rightPower = basicSpeed;
-//        leftPower = 0;
-//      } else {
-//        rightPower = 0;
-//        leftPower = basicSpeed;
-//      }
-      rightPower = basicSpeed;
-      leftPower = basicSpeed;
+     if (direction_his == 1) {
+       rightPower = basicSpeed;
+       leftPower = 0;
+     } else {
+       rightPower = 0;
+       leftPower = basicSpeed;
+     }
+      // rightPower = basicSpeed;
+      // leftPower = basicSpeed;
       Serial.print("u:");
       Serial.print(10);
       Serial.print(",");
@@ -204,21 +204,21 @@ void loop() {
     // PID制御
       // direction_hisを更新
       if (pos < 0) {
-        direction_his = 1;
-      } else if (pos > 0) {
         direction_his = -1;
+      } else if (pos > 0 && pos != 404) {
+        direction_his = 1;
       }
 
-      du = kp * (pos - pos_1) + ki * pos + kd * (pos - 2 * pos_1 + pos_2);
+      du = kp * (pos - pos_1) + ki * (pos + pos_1) / 2.0 + kd * (pos - 2 * pos_1 + pos_2);
       pos_2 = pos_1;
       pos_1 = pos;
       u = u + du;
       // 制御量からモーター出力量
       if (u > 0) {
-        leftPower = basicSpeed * (1 - u);
+        leftPower = basicSpeed * (0.4 *(1 - u) * (1 - u) + 0.6);
         rightPower = basicSpeed;
       } else {
-        rightPower = basicSpeed * (1 + u);
+        rightPower = basicSpeed * (0.4 * (1 + u) * (1 + u) + 0.6);
         leftPower = basicSpeed;
       }
 
