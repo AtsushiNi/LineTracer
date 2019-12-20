@@ -5,6 +5,8 @@ int sensorPin1 = A0;
 int sensorPin2 = A1;
 int sensorPin3 = A2;
 int sensorPin4 = A3;
+int rightEncoderPin = 0;
+int leftEncoderPin = 1;
 
 // Bluetooth入力用
 char inputMode = 'a'; // 入力モード。aは入力待機
@@ -39,17 +41,30 @@ int sensor_borders[4] = {
 // PID制御の変数
 float pos_1 = 0; // 前回の位置
 float pos_2 = 0; // 前々回の位置
-
 float du; // 制御量の変化
 float u; // 制御量
-
 // 線を見失った時のための変数
 int direction_his = 1;
+
+// エンコーダ用カウンター
+int rightCounter = 0;
+int leftCounter = 0;
+// 1ループ前の時間
+float before_time = 0;
+// 位置計算用の定数
+float KW = 0; // 左右の回転数差と車体の角速度の比例定数(おそらく車輪の円周/車輪幅)
+float KL = 1; // 回転数と進んだ距離の比例定数(グラフが見やすければなんでもOK)
+// 位置、角度の変数
+float theta = 0;
+float x = 0;
+float y = 0;
 
 void setup() {
   Serial.begin(9600);
   pinMode(rightMoterPin, OUTPUT);
   pinMode(leftMoterPin, OUTPUT);
+  attachInterrupt(rightEncoderPin, rightIncrement, RISING);
+  attachInterrupt(leftEncoderPin, leftIncrement, RISING);
 }
 
 void loop() {
@@ -162,6 +177,24 @@ void loop() {
     }
   }
 
+  // エンコーダの計算
+  float time = millis();
+  float w = KW * (rightCounter - leftCounter) / (time - before_time);
+  theta += w;
+  x = x + KL * (rightCounter + leftCounter) * cos(theta + w / 2.0);
+  y = y + KL * (rightCounter + leftCounter) * sin(theta + w / 2.0);
+
+  rightCounter = 0;
+  leftCounter = 0;
+  before_time = time;
+  Serial.print("theta:");
+  Serial.print(theta);
+  Serial.print(",x:");
+  Serial.print(x);
+  Serial.print(",y:");
+  Serial.print(y);
+  Serial.print(",");
+
   // 光センサー入力
   int sensorDatas[4] = {analogRead(sensorPin1), analogRead(sensorPin2), analogRead(sensorPin3), analogRead(sensorPin4)};
 
@@ -257,4 +290,12 @@ void loop() {
   Serial.print(rightPower);
   Serial.print(",lpow:");
   Serial.println(leftPower);
+}
+
+void rightIncrement() {
+  rightCounter++;
+}
+
+void leftIncrement() {
+  leftCounter++;
 }
