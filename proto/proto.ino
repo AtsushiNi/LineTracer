@@ -17,8 +17,6 @@ int runMode = 0; // 走行モード　0:ライントレース, 1:ラジコン, 2
 int radioControllDirection = 0; // ラジコンモードの進路方向　0:直進, 1:右, 2: 左
 int basicSpeed = 80; // 走行スピード. アナログ出力の最大は255
 float reduceRacio = 0.2; // ラジコンモードでの左右減速比
-int outputMoterPower = 0; // モーター出力値を出力するかどうか 0:しない, 1:する
-int outputLightSensor = 1; // 光センサーの値を出力するかどうか 0:しない, 1:する
 float kp = 0.8; // 比例制御のパラメータ
 float ki = 0; // 積分制御のパラメータ
 float kd = 1.2; // 微分制御のパラメータ
@@ -78,12 +76,6 @@ void loop() {
             break;
           case 'f':
             reduceRacio = atof(tmp);
-            break;
-          case 'g':
-            outputMoterPower = atoi(tmp);
-            break;
-          case 'i':
-            outputLightSensor = atoi(tmp);
             break;
           case 'j':
             kp = atof(tmp);

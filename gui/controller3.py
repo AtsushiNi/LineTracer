@@ -68,26 +68,6 @@ class MainScreen3(BoxLayout):
         if ',' in input_value:
             # センサーデータの解析
             params11, params12, params21, params22, params31, params32, params41, params42 = analyseModule.analyseData(input_value.split(','), ANALYSE_LOG_FILE_NAME)
-            # 右のセンサの前半から順に近似式の係数を送信していく。低い次数から順。指数表記になるような小さすぎる高次の係数は無視
-            # commands.append("m")
-            # for n in params11[::-1]:
-            #     if not ('e' in str(n)):
-            #         commands.append(str(n))
-            #         commands.append(',')
-            # for n in params12[::-1]:
-            #     if not ('e' in str(n)):
-            #         commands.append(str(n))
-            #         commands.append(',')
-            # for n in params21[::-1]:
-            #     if not ('e' in str(n)):
-            #         commands.append(str(n))
-            #         commands.append(',')
-            # for n in params22[::-1]:
-            #     if not ('e' in str(n)):
-            #         commands.append(str(n))
-            #         commands.append(',')
-            # commands.append('a')
-            # print(commands)
 
             # 係数の送信
             commands.append("A" + str(params11[-1]) + "a")
