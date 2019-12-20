@@ -19,7 +19,6 @@ int basicSpeed = 80; // 走行スピード. アナログ出力の最大は255
 float reduceRacio = 0.2; // ラジコンモードでの左右減速比
 int outputMoterPower = 0; // モーター出力値を出力するかどうか 0:しない, 1:する
 int outputLightSensor = 1; // 光センサーの値を出力するかどうか 0:しない, 1:する
-int outputMode = 2; // 表示出力の様式　0:ArduinoIDE, 1:Android, 2:Python
 float kp = 0.8; // 比例制御のパラメータ
 float ki = 0; // 積分制御のパラメータ
 float kd = 1.2; // 微分制御のパラメータ
@@ -82,9 +81,6 @@ void loop() {
             break;
           case 'g':
             outputMoterPower = atoi(tmp);
-            break;
-          case 'h':
-            outputMode = atoi(tmp);
             break;
           case 'i':
             outputLightSensor = atoi(tmp);
@@ -185,7 +181,7 @@ void loop() {
   float rightPower = 0; // 右モーター出力
   float leftPower = 0; // 左モーター出力
 
-  if (runMode == 0) {
+  if (runMode == 0) { // ライントレースモード
     // 線を見失ったときは、直近のデータを元に旋回
     if (pos == 404) {
      if (direction_his == 1) {
@@ -224,7 +220,7 @@ void loop() {
       Serial.print(u);
       Serial.print(",");
     }
-  } else if (runMode == 1) {
+  } else if (runMode == 1) { // ラジコンモード
     rightPower = (float)basicSpeed;
     leftPower = (float)basicSpeed;
     switch (radioControllDirection) {
@@ -235,13 +231,13 @@ void loop() {
         leftPower *= reduceRacio;
       break;
     }
-  } else if (runMode == 2) {
+  } else if (runMode == 2) { // テストモード
     rightPower = 0;
     leftPower = 0;
   }
 
   // モーター出力
-  if (basicStatus == 1) {
+  if (basicStatus == 1) { // 走行中
     if (rightPower < 0) {
       rightPower = 0;
     } else if (rightPower > 255) {
@@ -255,26 +251,18 @@ void loop() {
 
     analogWrite(rightMoterPin, rightPower);
     analogWrite(leftMoterPin, leftPower);
-  } else {
+  } else { // 待機中
     analogWrite(rightMoterPin, 0);
     analogWrite(leftMoterPin, 0);
   }
 
   // 表示出力
-  switch (outputMode) {
-    case 0:
-      break;
-    case 1:
-      break;
-    case 2:
-      Serial.print("time:");
-      Serial.print(millis());
-      Serial.print(",pos:");
-      Serial.print(pos);
-      Serial.print(",rpow:");
-      Serial.print(rightPower);
-      Serial.print(",lpow:");
-      Serial.println(leftPower);
-      break;
-  }
+  Serial.print("time:");
+  Serial.print(millis());
+  Serial.print(",pos:");
+  Serial.print(pos);
+  Serial.print(",rpow:");
+  Serial.print(rightPower);
+  Serial.print(",lpow:");
+  Serial.println(leftPower);
 }
