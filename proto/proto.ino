@@ -195,8 +195,6 @@ void loop() {
        rightPower = 0;
        leftPower = basicSpeed;
      }
-      // rightPower = basicSpeed;
-      // leftPower = basicSpeed;
       Serial.print("u:");
       Serial.print(10);
       Serial.print(",");
