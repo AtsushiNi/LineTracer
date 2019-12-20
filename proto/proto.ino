@@ -20,9 +20,9 @@ float reduceRacio = 0.2; // ラジコンモードでの左右減速比
 int outputMoterPower = 0; // モーター出力値を出力するかどうか 0:しない, 1:する
 int outputLightSensor = 1; // 光センサーの値を出力するかどうか 0:しない, 1:する
 int outputMode = 2; // 表示出力の様式　0:ArduinoIDE, 1:Android, 2:Python
-float kp = 1; // 比例制御のパラメータ
+float kp = 0.8; // 比例制御のパラメータ
 float ki = 0; // 積分制御のパラメータ
-float kd = 0; // 微分制御のパラメータ
+float kd = 1.2; // 微分制御のパラメータ
 // センサ値解析用近似式の係数。右センサー前半から、低次項から順
 float polyfit_params_11[2];
 float polyfit_params_12[2];

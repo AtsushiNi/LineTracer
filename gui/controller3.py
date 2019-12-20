@@ -24,7 +24,13 @@ FRAME_NUM = 200 # 画面に表示するデータ数
 ANALYSE_LOG_FILE_NAME = 'logs/sampleLogBy4Sensors.xlsx' # 制御パラメータ算出に使用するログファイル
 SAVE_LOG_FILE_NAME = 'logs/log.xlsx' # ログを記録するファイル名
 PORT = 'COM3' # Bluetooth: 'COM3'or'COM4', USB: 'COM5'
-sensor_borders = [160, 220, 210, 155] # センサーの閾値の初期値
+
+# Arduinoの変数
+sensor_borders = [160, 220, 210, 155] # センサーの閾値
+kp = 0.8
+ki = 0
+kd = 1.2
+basic_speed = 80
 
 commands = [] # 送信待ちコマンド
 input_value = '' # 入力中のコマンド
@@ -45,6 +51,12 @@ rpow = np.zeros(FRAME_NUM)
 lpow = np.zeros(FRAME_NUM)
 
 class MainScreen3(BoxLayout):
+    # スライダーの初期値
+    initial_kp = kp
+    initial_ki = ki
+    initial_kd = kd
+    initial_basic_speed = basic_speed
+    
     def handle_change(self, value):
         global input_value
         input_value = value.decode()
@@ -97,15 +109,15 @@ class MainScreen3(BoxLayout):
 
             # センサの閾値の送信
             borders = input_value.split(',')
-            sensor_borders[0] = borders[0]
-            sensor_borders[1] = borders[1]
-            sensor_borders[2] = borders[2]
-            sensor_borders[3] = borders[3]
+            sensor_borders[0] = borders[0] + sensor_borders[0]
+            sensor_borders[1] = borders[1] + sensor_borders[1]
+            sensor_borders[2] = borders[2] + sensor_borders[2]
+            sensor_borders[3] = borders[3] + sensor_borders[3]
 
-            commands.append("W" + str(int(borders[0])) + "a")
-            commands.append("X" + str(int(borders[1])) + "a")
-            commands.append("Y" + str(int(borders[2])) + "a")
-            commands.append("Z" + str(int(borders[3])) + "a")
+            commands.append("W" + str(sensor_borders[0]) + "a")
+            commands.append("X" + str(sensor_borders[1]) + "a")
+            commands.append("Y" + str(sensor_borders[2]) + "a")
+            commands.append("Z" + str(sensor_borders[3]) + "a")
 
         # sensor_bordersの変更
         elif input_value[0] is "W":
@@ -186,20 +198,34 @@ class MainScreen3(BoxLayout):
     def handle_kp_change(self, value, event):
         if (not event[1].is_mouse_scrolling) and (event[1].grab_current is event[0]):
             global commands
+            global kp
+            kp = value
             commands.append("j"+str(value)+"a")
             print("KP: "+str(value))
 
     def handle_ki_change(self, value, event):
         if (not event[1].is_mouse_scrolling) and (event[1].grab_current is event[0]):
             global commands
+            global ki
+            ki = value
             commands.append("k"+str(value)+"a")
             print("KI: "+str(value))
 
     def handle_kd_change(self, value, event):
         if (not event[1].is_mouse_scrolling) and (event[1].grab_current is event[0]):
             global commands
+            global kd
+            kd = value
             commands.append("l"+str(value)+"a")
             print("KD: "+str(value))
+
+    def handle_speed_change(self, value, event):
+        if (not event[1].is_mouse_scrolling) and (event[1].grab_current is event[0]):
+            global commands
+            global basic_speed
+            basic_speed = value
+            commands.append("e"+str(value)+"a")
+            print("Speed: "+str(value))
 
 class GraphView(BoxLayout):
     def __init__(self, *args, **kwargs):
@@ -306,10 +332,18 @@ class Controller3App(App):
     def __init__(self, **kwargs):
         super(Controller3App, self).__init__(**kwargs)
         global commands
+        # Arduinoに初期値を送信
+        # せんさーの閾値
         commands.append("W" + str(sensor_borders[0]) + "a")
         commands.append("X" + str(sensor_borders[1]) + "a")
         commands.append("Y" + str(sensor_borders[2]) + "a")
         commands.append("Z" + str(sensor_borders[3]) + "a")
+        # pidパラメーター
+        commands.append("j" + str(kp) + "a")
+        commands.append("k" + str(ki) + "a")
+        commands.append("l" + str(kd) + "a")
+        # basic_speed
+        commands.append("e" + str(basic_speed) + "a")
 
     def build(self):
         serialClient = SerialClient()

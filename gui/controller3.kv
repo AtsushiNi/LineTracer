@@ -128,10 +128,11 @@ MainScreen3:
                         id: kp
                         min: 0
                         max: 5
+                        value: root.initial_kp
                         size_hint_x: 8
                         on_touch_up: root.handle_kp_change(self.value, args)
                     Label:
-                        text: '{:.0f}'.format(kp.value)
+                        text: '{:.3f}'.format(kp.value)
                         size_hint_x: 1
 
                 BoxLayout:
@@ -142,10 +143,11 @@ MainScreen3:
                         id: ki
                         min: 0
                         max: 2
+                        value: root.initial_ki
                         size_hint_x: 8
                         on_touch_up: root.handle_ki_change(self.value, args)
                     Label:
-                        text: '{:.0f}'.format(ki.value)
+                        text: '{:.3f}'.format(ki.value)
                         size_hint_x: 1
 
                 BoxLayout:
@@ -156,15 +158,30 @@ MainScreen3:
                         id: kd
                         min: 0
                         max: 2
+                        value: root.initial_kd
                         size_hint_x: 8
                         on_touch_up: root.handle_kd_change(self.value, args)
                     Label:
-                        text: '{:.0f}'.format(kd.value)
+                        text: '{:.3f}'.format(kd.value)
                         size_hint_x: 1
 
             BoxLayout:
                 id: left_sliders
                 orientation: "vertical"
+                BoxLayout:
+                    Label:
+                        text: "speed"
+                        size_hint_x: 1
+                    Slider:
+                        id: speed
+                        min: 40
+                        max: 200
+                        step: 1
+                        value: root.initial_basic_speed
+                        size_hint_x: 8
+                        on_touch_up: root.handle_speed_change(self.value, args)
+                    Label:
+                        text: '{:.0f}'.format(speed.value)
 
     Label:
         text: "  Graph"
