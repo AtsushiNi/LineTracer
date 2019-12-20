@@ -333,7 +333,7 @@ class Controller3App(App):
         super(Controller3App, self).__init__(**kwargs)
         global commands
         # Arduinoに初期値を送信
-        # せんさーの閾値
+        # センサーの閾値
         commands.append("W" + str(sensor_borders[0]) + "a")
         commands.append("X" + str(sensor_borders[1]) + "a")
         commands.append("Y" + str(sensor_borders[2]) + "a")
