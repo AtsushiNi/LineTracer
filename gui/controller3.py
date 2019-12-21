@@ -49,6 +49,9 @@ case = np.zeros(FRAME_NUM)
 u = np.zeros(FRAME_NUM)
 rpow = np.zeros(FRAME_NUM)
 lpow = np.zeros(FRAME_NUM)
+position_theta = np.zeros(FRAME_NUM)
+position_x =  np.zeros(FRAME_NUM)
+position_y =  np.zeros(FRAME_NUM)
 
 class MainScreen3(BoxLayout):
     # スライダーの初期値
@@ -219,7 +222,7 @@ class GraphView(BoxLayout):
         y = np.zeros(FRAME_NUM)
 
         # Figure, Axis を保存しておく
-        self.fig, self.ax = plt.subplots(3, facecolor="0.1")
+        self.fig, self.ax = plt.subplots(4, facecolor="0.1")
         self.ax[0].tick_params(axis='x', colors="0.8")
         self.ax[0].tick_params(axis='y', colors="0.8")
         self.ax[0].set_facecolor((0.4, 0.4, 0.4, 1))
@@ -233,6 +236,7 @@ class GraphView(BoxLayout):
         self.ax[2].tick_params(axis='y', colors="0.8")
         self.ax[2].set_facecolor((0.4, 0.4, 0.4, 1))
         self.ax[2].set_ylim([-0.5, 200])
+        self.ax[3].set_facecolor((0.4, 0.4, 0.4, 1))
 
         # 最初に描画したときの Line も保存しておく
         self.line11, = self.ax[0].plot(x, y, label="sensor1")
@@ -246,6 +250,8 @@ class GraphView(BoxLayout):
 
         self.line31, = self.ax[2].plot(x, y, label="rightPower")
         self.line32, = self.ax[2].plot(x, y, label="leftPower")
+
+        self.line41, = self.ax[3].plot([], [])
         # ウィジェットとしてグラフを追加する
         widget = FigureCanvasKivyAgg(self.fig)
         self.add_widget(widget)
@@ -265,6 +271,9 @@ class GraphView(BoxLayout):
         global rpow
         global lpow
         global u
+        global position_theta
+        global position_x
+        global position_y
 
         # is_graph_updating == Falseならグラフ更新しない
         if not is_graph_updating:
@@ -284,6 +293,10 @@ class GraphView(BoxLayout):
         y31 = rpow[-FRAME_NUM:]
         y32 = lpow[-FRAME_NUM:]
 
+        x41 = position_x[FRAME_NUM:]
+        y41 = position_y[FRAME_NUM:]
+        y42 = position_theta[FRAME_NUM:]
+
         # Line にデータを設定する
         self.line11.set_data(x, y11)
         self.line12.set_data(x, y12)
@@ -294,6 +307,7 @@ class GraphView(BoxLayout):
         self.line23.set_data(x, y23)
         self.line31.set_data(x, y31)
         self.line32.set_data(x, y32)
+        self.line41.set_data(x41, y41)
         # グラフの見栄えを調整する
         self.ax[0].relim()
         self.ax[0].autoscale_view()
@@ -388,6 +402,15 @@ class SerialClient():
                     elif x[0] == 'lpow':
                         global lpow
                         lpow = np.append(lpow, float(x[1]))
+                    elif x[0] == 'theta':
+                        global position_theta
+                        position_theta = np.append(position_theta, float(x[1]))
+                    elif x[0] == 'x':
+                        global position_x
+                        position_x = np.append(position_x, float(x[1]))
+                    elif x[0] == 'y':
+                        global position_y
+                        position_y = np.append(position_y, float(x[1]))
 
                     # else:
                     #     print(x[0])
