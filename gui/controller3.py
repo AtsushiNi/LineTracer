@@ -124,8 +124,25 @@ class MainScreen3(BoxLayout):
     def handle_start(self):
         global commands
         global is_graph_updating
+        global light1
+        global light2
+        global light3
+        global light4
+        global pos
+        global time
+        global case
+        global u
+        global rpow
+        global lpow
+        global position_theta
+        global position_x
+        global position_y
         commands.append("b1a")
         is_graph_updating = True
+
+        # データ初期化
+        light1 =light2 = light3 = light4 = pos = time = case = u = rpow = lpow = position_theta = position_x = position_y = np.zeros(FRAME_NUM)
+
         print("start")
 
     def handle_stop(self):
@@ -136,37 +153,57 @@ class MainScreen3(BoxLayout):
         global light3
         global light4
         global time
+        global pos
+        global u
+        global position_x
+        global position_y
         global FRAME_NUM
 
         commands.append("b0a")
         is_graph_updating = False
 
-        # 最初の200行は0で埋まっているので削除
+        # 最初の数百行は0で埋まっているので削除
         while time[0] == 0:
             light1 = np.delete(light1, 0)
             light2 = np.delete(light2, 0)
             light3 = np.delete(light3, 0)
             light4 = np.delete(light4, 0)
             time = np.delete(time, 0)
+            pos = np.delete(pos, 0)
+            u = np.delete(u, 0)
+            position_x = np.delete(position_x, 0)
+            position_y = np.delete(position_y, 0)
 
         # Excelにログ保存
         try:
             wb = openpyxl.load_workbook(SAVE_LOG_FILE_NAME)
             wb.remove(wb["Sheet1"])
             sheet = wb.create_sheet("Sheet1")
-            for t in range(np.size(time)):
-                sheet.cell(row=t+1,column=1,value=t+1)
-                sheet.cell(row=t+1,column=2,value=time[t])
-                sheet.cell(row=t+1,column=3,value=light1[t])
-                sheet.cell(row=t+1,column=4,value=light2[t])
-                sheet.cell(row=t+1,column=5,value=light3[t])
-                sheet.cell(row=t+1,column=6,value=light4[t])
+            sheet.cell(row=1,column=2,value="time")
+            sheet.cell(row=1,column=3,value="light1")
+            sheet.cell(row=1,column=4,value="light2")
+            sheet.cell(row=1,column=5,value="light3")
+            sheet.cell(row=1,column=6,value="light4")
+            sheet.cell(row=1,column=7,value="pos")
+            sheet.cell(row=1,column=8,value="u")
+            sheet.cell(row=1,column=9,value="position_x")
+            sheet.cell(row=1,column=10,value="position_y")
+            for t in range(np.size(time)-1):
+                sheet.cell(row=t+2,column=1,value=t+1)
+                sheet.cell(row=t+2,column=2,value=time[t])
+                sheet.cell(row=t+2,column=3,value=light1[t])
+                sheet.cell(row=t+2,column=4,value=light2[t])
+                sheet.cell(row=t+2,column=5,value=light3[t])
+                sheet.cell(row=t+2,column=6,value=light4[t])
+                sheet.cell(row=t+2,column=7,value=pos[t])
+                sheet.cell(row=t+2,column=8,value=u[t])
+                sheet.cell(row=t+2,column=9,value=position_x[t])
+                sheet.cell(row=t+2,column=10,value=position_y[t])
             wb.save(SAVE_LOG_FILE_NAME)
-        except IndexError:
+        except IndexError as e:
             print("ログを保存できませんでした")
+            print(e)
 
-        # データ初期化
-        light1 =light2 = light3 = light4 = pos = time = np.zeros(FRAME_NUM)
         print("stop")
 
     def handle_mode_test(self):
