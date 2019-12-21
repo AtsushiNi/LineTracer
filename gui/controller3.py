@@ -152,7 +152,8 @@ class MainScreen3(BoxLayout):
         # Excelにログ保存
         try:
             wb = openpyxl.load_workbook(SAVE_LOG_FILE_NAME)
-            sheet = wb['Sheet1']
+            wb.remove(wb["Sheet1"])
+            sheet = wb.create_sheet("Sheet1")
             for t in range(np.size(time)):
                 sheet.cell(row=t+1,column=1,value=t+1)
                 sheet.cell(row=t+1,column=2,value=time[t])
